@@ -12,6 +12,7 @@ var api = {
 		res.send(req.params);
 		return next();
 	}
+	
 
 };
 
