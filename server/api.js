@@ -8,7 +8,7 @@ var api = {
 		@description: Takes the parsed res and request from restify
 	*/
 
-	accountDetails: function(req, res, next) {
+	getAccountDetails: function(req, res, next) {
 		res.send(req.params);
 		return next();
 	}

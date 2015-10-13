@@ -13,7 +13,7 @@ server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
 
-server.get('/account/:id', api.accountDetails);
+server.get('/account/:id', api.getAccountDetails);
 
 
 server.listen(80, function() {
