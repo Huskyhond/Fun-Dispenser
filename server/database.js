@@ -5,9 +5,17 @@ var connection = mysql.createConnection({
 });
 
 var database = {
-	getAccountDetails: function(id) {
-
-	}
+	getPlayerDetails: function(playerId) {
+		connection.query("SELECT * FROM players WHERE ?", { id: playerId })
+		.on('error', function(err) {
+    	
+	  })
+	  .on('fields', function(fields) {
+	    
+	  })
+	  .on('result', function(row) {
+	    connection.resume();
+		});
 };
 
 module.exports = database;
