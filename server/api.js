@@ -11,6 +11,12 @@ var api = {
 	getPlayerDetails: function(req, res, next) {
 		res.send(req.params);
 		return next();
+	},
+	
+	getQuestion: function(req, res, next) {
+		database.getQuestions({ levelId: 1, subjectId: 3, limit: 1 }, function(result) {
+			
+		});
 	}
 	
 

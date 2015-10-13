@@ -15,7 +15,6 @@ server.use(restify.bodyParser());
 
 server.get('/player/:id', api.getPlayerDetails);
 
-
 server.listen(80, function() {
 	console.log("Server started!");
 });
