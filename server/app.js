@@ -14,6 +14,7 @@ server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
 
+/** players */
 server.get('/players/:playerId', api.getPlayerDetails);
 server.get('/players/tag/:tagId', api.getPlayerDetails);
 server.get('/players/level/:levelId', api.getPlayerDetails);

@@ -1,12 +1,7 @@
 var mysql = require("mysql");
+var config  = require('./config.js');
 
-var connection = mysql.createConnection({
-	host 		 : "localhost",
-	user 		 : "root",
-	password : "root",
-	database : "fundispenser_local",
-	port		 : 8889
-});
+var connection = mysql.createConnection(config.database);
 
 var database = {
 	/**
