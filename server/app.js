@@ -2,7 +2,7 @@
 
 var restify = require('restify'),
 		api			= require('./api.js'),
-		config  = require('./config.js');
+		config  = require('./config/config.js');
 
 var server = restify.createServer({
 	name: 'Project Fun Server',
