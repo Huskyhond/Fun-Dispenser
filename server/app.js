@@ -15,14 +15,20 @@ server.use(restify.bodyParser());
 
 
 /** players */
-server.get('/players/', api.getPlayerDetails);
-server.get('/players/id/:playerId', api.getPlayerDetails);
+server.get('/players', api.getPlayerDetails);
+server.get('/players/:playerId', api.getPlayerDetails);
 server.get('/players/tag/:tagId', api.getPlayerDetails);
 server.get('/players/level/:levelId', api.getPlayerDetails);
 server.get('/players/flavour/:flavourId', api.getPlayerDetails);
 
-server.get('/flavours/', api.getFlavourDetails);
-server.get('/flavours[/id/:flavourId]', api.getFlavourDetails);
+/** flavours */
+server.get('/flavours', api.getFlavourDetails);
+server.get('/flavours/:flavourId]', api.getFlavourDetails);
+
+/** questions */
+server.get('/question', api.getRandomQuestion); // get random question of any subject
+server.get('/question/subject/:subjectId', api.getRandomQuestion); //get random question of given subject
+server.get('/question/:questionId', api.getQuestion); // get question based on id
 
 server.listen(config.port, function() {
 	console.log("Server started!");

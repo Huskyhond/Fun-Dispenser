@@ -41,8 +41,9 @@ var api = {
 			if(dbResult.items.length < 1) {
 				// do sth if no items found.
 			}
+
 			res.send(dbResult);
-		}
+		};
 
 		if(req.params.flavourId)
 			database.getFlavourDetailsById(req.params.flavourId, callback);
@@ -50,11 +51,29 @@ var api = {
 			database.getAllFlavourDetails(callback);
 		return next();
 	},
+
+	getRandomQuestion: function(req, res, next) {
+		var callback = function(dbResult) {
+			dbResult.items;
+			res.send(dbResult);
+		};
+
+		if(req.params.subjectId)
+			database.getQuestionBySubject(req.params.subjectId, callback);
+		else
+			database.getQuestions({ limit: 1}, callback);
+
+		return next();
+	},
 	
 	getQuestion: function(req, res, next) {
-		database.getQuestions({ levelId: 1, subjectId: 3, limit: 1 }, function(result) {
-			
+		if(!req.params.questionId)
+			return api.getRandomQuestion(req, res, next);
+
+		database.getQuestion(req.params.questionId, function(dbResult) {
+			res.send(dbResult);
 		});
+		return next();
 	}
 	
 

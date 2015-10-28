@@ -5,11 +5,11 @@ var mysql = require("mysql");
 var dbase = {
 
 	connection: mysql.createConnection(config.database),
+	options: null,
 
 	getConnection: function() {
 		return dbase.connection;
 	},
-
 	/**
 		options.queryOptions = {
 			nestTables: true,
@@ -24,6 +24,10 @@ var dbase = {
 		
 		if(options.where)
 			queryOptions.sql += " WHERE ?";
+		if(options.orderBy)
+			queryOptions.sql += " ORDER BY " + options.orderBy;
+		if(options.limit)
+			queryOptions.sql += " LIMIT " + options.limit;
 		
 		queryOptions.nestTables = !!options.nestTables;
 

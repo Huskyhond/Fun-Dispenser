@@ -82,22 +82,48 @@ var database = {
 		database.getAllFlavourDetails({ where: { "flavourId": flavourId}}, callback);
 	},
 
+	/** 
+	*	Get question
+	*/
+	getQuestion: function(questionId, callback) {
+		database.getQuestions({ where: { questionId: questionId }, limit: 1 }, callback);
+	},
+
+	getQuestionBySubject: function(subjectId, callback) {
+		database.getQuestions({ where: { "subject.subjectId": subjectId }, limit: 1 }, callback);
+	},
+
 	getQuestions: function(options, callback) {
-	  var result = {};
-	  result.questions = [];
-	  connection.query("SELECT questionId, question, answer FROM questions WHERE ? LIMIT " + options.limit, 
-	  	{ levelId: options.levelId, subjectId: options.subjectId  })
-	  .on('error', function(err) {
-	  })
-	  .on('fields', function(fields) {
-	    
-	  })
-	  .on('result', function(row) {
-	  	result.questions.push(row);
-	  })
-	  .on('end', function() {
-			callback(result);
-	  });
+		var where = "";
+		if(!options.result) options.result = {};
+		if(!options.result.items) options.result.items = [];
+		if(options.where)
+			where = " WHERE ?";
+		console.log("WHERE!!!?", options.where);
+		var todo = 0;
+
+		connection.query({
+			sql: "SELECT questionId as id, question, answerId, subject.subjectId as id, subject.subjectName" +
+					 " FROM questions as question INNER JOIN subjects as subject ON question.subjectId = subject.subjectId" +
+					 where + " ORDER BY RAND() " + (options.limit ? "LIMIT " + options.limit : ""),
+			nestTables: true
+		}, options.where)
+		.on('result', function(row) {
+			todo++;
+			row.answers = [];
+
+			connection.query("SELECT answerId, answer FROM answers WHERE ?", { questionId: row.question.id })
+			.on('result', function(_row) {
+				row.answers.push(_row);
+			})
+			.on('end', function() {
+				todo--;
+				options.result.items.push(row);
+				if(todo < 1) {
+					callback(options.result);
+				}
+			});
+		});
 	}
 };
 
