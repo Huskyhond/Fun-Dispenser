@@ -27,9 +27,27 @@ var api = {
 			database.getPlayerDetailsByTagId(req.params.tagId.toUpperCase(), callback);
 		else if(req.params.levelId)
 			database.getPlayerDetailsByLevelId(req.params.levelId, callback);
+		else if(req.params.flavourId)
+			database.getPlayerDetailsByFlavourId(req.params.flavourId, callback);
 		else
 			database.getAllPlayerDetails(callback);
 			
+		return next();
+	},
+
+	getFlavourDetails: function(req, res, next) {
+
+		var callback = function(dbResult) {
+			if(dbResult.items.length < 1) {
+				// do sth if no items found.
+			}
+			res.send(dbResult);
+		}
+
+		if(req.params.flavourId)
+			database.getFlavourDetailsById(req.params.flavourId, callback);
+		else
+			database.getAllFlavourDetails(callback);
 		return next();
 	},
 	

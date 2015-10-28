@@ -1,7 +1,6 @@
-var mysql = require("mysql");
-var config  = require('./config/config.js');
+var dbase 	= require('./dbase.js');
 
-var connection = mysql.createConnection(config.database);
+var connection = dbase.getConnection();
 
 var database = {
 	/**
@@ -28,42 +27,34 @@ var database = {
 			callback = options;
 			options = {};
 		}
-		
-		var result = {};
-				result.items = [];
 
-		var sqlStatement = "SELECT playerId as id, playerName, tagId, experience, " +
-											 "			 flavour.flavourId as id, flavourName, " +
-											 "			 level.levelId as id, achievedAt, levelName " +
-		  								 "FROM players as player " +
-		  								 "INNER JOIN flavours as flavour " +
-		  								 "ON flavour.flavourId = player.flavourId " +
-		  								 "INNER JOIN levels as level " +
-		  								 "ON level.levelId = player.levelId "
-		if(options.where)
-			sqlStatement += "WHERE ?";
-		console.log(options.where);
-		connection.query({ nestTables: true, 
-	  									 sql: sqlStatement
-		}, options.where)
-	  .on('error', function(error) {
-	  	result.error = database.defaultError(error, 100, "Mysql Error in getAllPlayerDetails");
-	  })
-	  .on('fields', function(fields) {
-	    
-	  })
-	  .on('result', function(row) {
-	  	var playerObject = {
-	  		player: {
-	  			id: row.playerId,
-	  			playerName: row.playerName
-	  		}
-	  	}
-	  	result.items.push(row);
-	  })
-	  .on('end', function() {
-	  	callback(result);
-	  });
+
+		var _options = {
+			select: "SELECT playerId as id, playerName, tagId, experience, flavour.flavourId as id, flavourName, level.levelId as id, achievedAt, levelName",
+			from: "FROM players as player INNER JOIN flavours as flavour ON flavour.flavourId = player.flavourId INNER JOIN levels as level ON level.levelId = player.levelId",
+			where: options.where,
+			nestTables: true
+		};
+
+		dbase.genericSqlQuery(_options, callback);
+	},
+	getAllFlavourDetails: function(options, callback) {
+		if(!options) options = {};
+
+		if(typeof options === "function" && !callback) { 
+			callback = options;
+			options = {};
+		}
+
+
+		var _options = {
+			select: "SELECT flavourId as id, flavourName",
+			from: "FROM flavours as flavour",
+			where: options.where,
+			nestTables: true
+		};
+
+		dbase.genericSqlQuery(_options, callback);
 	},
 
 	/**
@@ -78,8 +69,18 @@ var database = {
 	getPlayerDetailsByLevelId: function(levelId, callback) {
 		database.getAllPlayerDetails({ where: { "level.levelId"	 : levelId  } }, callback);
 	},
+	getPlayerDetailsByFlavourId: function(flavourId, callback) {
+		database.getAllPlayerDetails({ where: { "player.flavourId" : flavourId } }, callback);
+	},
 	/** End player details block  **/
 
+
+	/**
+	* Get flavour details, only Id applicable yet.
+	*/
+	getFlavourDetailsById: function(flavourId, callback) {
+		database.getAllFlavourDetails({ where: { "flavourId": flavourId}}, callback);
+	},
 
 	getQuestions: function(options, callback) {
 	  var result = {};

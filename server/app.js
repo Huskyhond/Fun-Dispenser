@@ -15,9 +15,14 @@ server.use(restify.bodyParser());
 
 
 /** players */
-server.get('/players/:playerId', api.getPlayerDetails);
+server.get('/players/', api.getPlayerDetails);
+server.get('/players/id/:playerId', api.getPlayerDetails);
 server.get('/players/tag/:tagId', api.getPlayerDetails);
 server.get('/players/level/:levelId', api.getPlayerDetails);
+server.get('/players/flavour/:flavourId', api.getPlayerDetails);
+
+server.get('/flavours/', api.getFlavourDetails);
+server.get('/flavours[/id/:flavourId]', api.getFlavourDetails);
 
 server.listen(config.port, function() {
 	console.log("Server started!");
