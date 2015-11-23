@@ -1,4 +1,5 @@
-var dbase 	= require('./dbase.js');
+var dbase 	= require('./dbase.js'),
+		projectDefaults = require("./projectDefaults.js");
 
 var connection = dbase.getConnection();
 
@@ -7,11 +8,11 @@ var database = {
 		@errorScope: 100-199
 	*/
 
-	defaultError: function(error, code, message) {
+	defaultError: function(code, message) {
 		if(!code) code = 999;
 		if(!message) message = "Unknown error";
 		return { 
-				code: 1,
+				code: code,
 				message: message
 			} 
 	},
@@ -99,8 +100,9 @@ var database = {
 		if(!options.result.items) options.result.items = [];
 		if(options.where)
 			where = " WHERE ?";
-		console.log("WHERE!!!?", options.where);
+
 		var todo = 0;
+		var cbed = false;
 
 		connection.query({
 			sql: "SELECT questionId as id, question, answerId, subject.subjectId as id, subject.subjectName" +
@@ -121,10 +123,39 @@ var database = {
 				options.result.items.push(row);
 				if(todo < 1) {
 					callback(options.result);
+					cbed = true;
 				}
 			});
+		})
+		.on('end', function() {
+			if(!cbed && todo < 1)
+				callback(options.result);
+		})
+	},
+
+	setPlayer: function(options, callback) {
+		if(!options.result) options.result = {};
+		
+		/** Required **/
+		if(!options.player || !options.player.playerName) options.result = database.defaultError(100, "Variable 'username' not set, in object 'player'");
+		if(!options.player || !options.player.playerName) return callback(options.result);
+
+		/** Optional **/
+		var player = projectDefaults.getPlayerDefaults(options.player);
+		console.log(player);
+		connection.query("INSERT INTO players SET ?", player, function(err, result) {
+			if(err) { 
+				console.log(err);
+				options.result = database.defaultError(101, "Error in database!");
+				return callback(options.result)
+			}
+			options.result.playersInserted = result.affectedRows;
+			options.result.player = player;
+			options.result.player.playerId = result.insertId;
+			callback(options.result);
 		});
 	}
+
 };
 
 module.exports = database;

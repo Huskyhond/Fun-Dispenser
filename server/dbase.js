@@ -6,10 +6,11 @@ var dbase = {
 
 	connection: mysql.createConnection(config.database),
 	options: null,
-
+	
 	getConnection: function() {
 		return dbase.connection;
 	},
+
 	/**
 		options.queryOptions = {
 			nestTables: true,

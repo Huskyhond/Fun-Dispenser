@@ -1,4 +1,5 @@
-var database = require("./database");
+var database = require("./database"),
+		tools		 = require("./tools.js");
 
 var api = {
 	/*
@@ -9,8 +10,34 @@ var api = {
 		@errorScope: 200-299
 	*/
 
+	setPlayer: function(req, res, next) {
+		var postData = tools.parseUrl(req.body);
+
+		var callback = function(dbResult) {
+			if(dbResult.playersAffected < 1) {
+				dbResult.error = {
+					code: 202,
+					message: "Database refused data given!"
+				}
+			}
+			res.send(dbResult);
+		}
+
+		if(postData && postData.register) {
+			database.setPlayer({
+				player: {
+					playerName : postData.username,
+					email			 : postData.email
+				}
+			}, callback);
+		}
+		else 
+			res.send({ error: { code: 999, message: "Not implemented yet." } }); // set existing player
+
+		return next();
+	},
+
 	getPlayerDetails: function(req, res, next) {
-		
 		var callback = function(dbResult) {
 			if(dbResult.items.length < 1) {
 				dbResult.error = {
@@ -54,7 +81,6 @@ var api = {
 
 	getRandomQuestion: function(req, res, next) {
 		var callback = function(dbResult) {
-			dbResult.items;
 			res.send(dbResult);
 		};
 
@@ -71,6 +97,8 @@ var api = {
 			return api.getRandomQuestion(req, res, next);
 
 		database.getQuestion(req.params.questionId, function(dbResult) {
+			if(dbResult.items.length < 1)
+				dbResult.error = { code: 201, message: "Question not found" };
 			res.send(dbResult);
 		});
 		return next();
