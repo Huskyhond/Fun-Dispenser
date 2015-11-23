@@ -1,0 +1,63 @@
+body {
+    font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
+    font-size:12px;
+    background-color: #E4E4E4;
+}
+
+.app {
+    margin: 0 auto;
+    margin-top: 30px;
+    margin-left: 30px;
+    max-width: 400px;
+}
+
+.appcenter {
+    text-align: center;
+    width: 100%;
+    height: 200px;
+    overflow: auto;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+
+@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
+
+    .appcenter {
+        text-align: center;
+        width: 50%;
+        height: 200px;
+    }
+
+}
+
+@keyframes fade {
+    from { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    to { opacity: 1.0; }
+}
+ 
+@-webkit-keyframes fade {
+    from { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    to { opacity: 1.0; }
+}
+
+.blink {
+    animation:fade 3000ms infinite;
+    -webkit-animation:fade 3000ms infinite;
+}
+
+.event {
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    color:#FFFFFF;
+    font-size:12px;
+    margin:0px 30px;
+    padding:2px 0px;
+}
+
+.event.listening {
+    background-color:#4B946A;
+    display:block;
+}

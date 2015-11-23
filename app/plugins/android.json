@@ -7,13 +7,13 @@
         "files": {}
     },
     "installed_plugins": {
+        "cordova-plugin-console": {
+            "PACKAGE_NAME": "nl.thinkshop.fundispenser"
+        },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "nl.thinkshop.fundispenser"
         },
         "phonegap-nfc": {
-            "PACKAGE_NAME": "nl.thinkshop.fundispenser"
-        },
-        "cordova-plugin-console": {
             "PACKAGE_NAME": "nl.thinkshop.fundispenser"
         }
     },
