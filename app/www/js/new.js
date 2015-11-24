@@ -1,5 +1,5 @@
  $(document).ready(function() {
-      $(".btn").attr("disabled", "disabled");
+      alert("new");
       $("#register").submit(function(event) {
           if($("#username").val().length > 0 && $("#email").val().length > 0)
               alert("Sending data to " + settings.apiUrl);

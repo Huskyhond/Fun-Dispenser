@@ -54,6 +54,9 @@ var app = {
                 // the payload from each record
                 alert(JSON.stringify(ndefMessage));
 
+                if(!JSON.stringify(ndefMessage))
+                    return app.unknownUser();
+
                 // assuming the first record in the message has
                 // a payload that can be converted to a string.
                 var json = app.parseJSON(nfc.bytesToString(ndefMessage[0].payload).substring(3));
@@ -64,6 +67,11 @@ var app = {
                         var returnedData = {}; // Data recieved from server
                         if(!returnedData || returnedData.error)
                             app.unknownUser();
+                        else {
+                            window.localStorage.setItem("tagId", json.id);
+                            window.localStorage.setItem("loggedIn", true);
+                            location.href = "home.html";
+                        }
                     }
                 }
                 else 
