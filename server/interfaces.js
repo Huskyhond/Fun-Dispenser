@@ -10,7 +10,7 @@ var getQuestion = function(req, res, next) {
 
 
 /* Database.js */
-var getPlayerDetails = function(tagId) {
+var getPlayerDetailsById = function(playerId) {
     return { 
              player: {
                 id: 1, 

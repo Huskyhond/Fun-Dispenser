@@ -1,43 +1,161 @@
-var mysql = require("mysql");
+var dbase 	= require('./dbase.js'),
+		projectDefaults = require("./projectDefaults.js");
 
-var connection = mysql.createConnection({
-
-});
+var connection = dbase.getConnection();
 
 var database = {
+	/**
+		@errorScope: 100-199
+	*/
 
-	getPlayerDetails: function(playerId, callback) {
-	  connection.query("SELECT * FROM players WHERE ?", { id: playerId })
-	  .on('error', function(err) {
-    	
-	  })
-	  .on('fields', function(fields) {
-	    
-	  })
-	  .on('result', function(row) {
-	   
-	  })
-	  .on('end', function() {
-
-	  });
+	defaultError: function(code, message) {
+		if(!code) code = 999;
+		if(!message) message = "Unknown error";
+		return { 
+				code: code,
+				message: message
+			} 
 	},
+
+	/**
+	* Returns object with key items (empty if no rows) or object with key error
+	*/
+
+	getAllPlayerDetails: function(options, callback) {
+		if(!options) options = {};
+
+		if(typeof options === "function" && !callback) { 
+			callback = options;
+			options = {};
+		}
+
+
+		var _options = {
+			select: "SELECT playerId as id, playerName, tagId, experience, flavour.flavourId as id, flavourName, level.levelId as id, achievedAt, levelName",
+			from: "FROM players as player INNER JOIN flavours as flavour ON flavour.flavourId = player.flavourId INNER JOIN levels as level ON level.levelId = player.levelId",
+			where: options.where,
+			nestTables: true
+		};
+
+		dbase.genericSqlQuery(_options, callback);
+	},
+	getAllFlavourDetails: function(options, callback) {
+		if(!options) options = {};
+
+		if(typeof options === "function" && !callback) { 
+			callback = options;
+			options = {};
+		}
+
+
+		var _options = {
+			select: "SELECT flavourId as id, flavourName",
+			from: "FROM flavours as flavour",
+			where: options.where,
+			nestTables: true
+		};
+
+		dbase.genericSqlQuery(_options, callback);
+	},
+
+	/**
+	* Get player details: includes flavour & level
+	*/
+	getPlayerDetailsById: function(playerId, callback) {
+		database.getAllPlayerDetails({ where: { "player.playerId": playerId } }, callback);
+	},
+	getPlayerDetailsByTagId: function(tagId, callback) {
+		database.getAllPlayerDetails({ where: { "player.tagId"	 : tagId 	  } }, callback);
+	},
+	getPlayerDetailsByLevelId: function(levelId, callback) {
+		database.getAllPlayerDetails({ where: { "level.levelId"	 : levelId  } }, callback);
+	},
+	getPlayerDetailsByFlavourId: function(flavourId, callback) {
+		database.getAllPlayerDetails({ where: { "player.flavourId" : flavourId } }, callback);
+	},
+	/** End player details block  **/
+
+
+	/**
+	* Get flavour details, only Id applicable yet.
+	*/
+	getFlavourDetailsById: function(flavourId, callback) {
+		database.getAllFlavourDetails({ where: { "flavourId": flavourId}}, callback);
+	},
+
+	/** 
+	*	Get question
+	*/
+	getQuestion: function(questionId, callback) {
+		database.getQuestions({ where: { questionId: questionId }, limit: 1 }, callback);
+	},
+
+	getQuestionBySubject: function(subjectId, callback) {
+		database.getQuestions({ where: { "subject.subjectId": subjectId }, limit: 1 }, callback);
+	},
+
 	getQuestions: function(options, callback) {
-	  var result = {};
-	  result.questions = [];
-	  connection.query("SELECT questionId, question, answer FROM questions WHERE ? LIMIT " + options.limit, 
-	  	{ levelId: options.levelId, subjectId: options.subjectId  })
-	  .on('error', function(err) {
-	  })
-	  .on('fields', function(fields) {
-	    
-	  })
-	  .on('result', function(row) {
-	  	result.questions.push(row);
-	  })
-	  .on('end', function() {
-			callback(result);
-	  });
+		var where = "";
+		if(!options.result) options.result = {};
+		if(!options.result.items) options.result.items = [];
+		if(options.where)
+			where = " WHERE ?";
+
+		var todo = 0;
+		var cbed = false;
+
+		connection.query({
+			sql: "SELECT questionId as id, question, answerId, subject.subjectId as id, subject.subjectName" +
+					 " FROM questions as question INNER JOIN subjects as subject ON question.subjectId = subject.subjectId" +
+					 where + " ORDER BY RAND() " + (options.limit ? "LIMIT " + options.limit : ""),
+			nestTables: true
+		}, options.where)
+		.on('result', function(row) {
+			todo++;
+			row.answers = [];
+
+			connection.query("SELECT answerId, answer FROM answers WHERE ?", { questionId: row.question.id })
+			.on('result', function(_row) {
+				row.answers.push(_row);
+			})
+			.on('end', function() {
+				todo--;
+				options.result.items.push(row);
+				if(todo < 1) {
+					callback(options.result);
+					cbed = true;
+				}
+			});
+		})
+		.on('end', function() {
+			if(!cbed && todo < 1)
+				callback(options.result);
+		})
+	},
+
+	setPlayer: function(options, callback) {
+		if(!options.result) options.result = {};
+		
+		/** Required **/
+		if(!options.player || !options.player.playerName) options.result = database.defaultError(100, "Variable 'username' not set, in object 'player'");
+		if(!options.player || !options.player.playerName) return callback(options.result);
+
+		/** Optional **/
+		var player = projectDefaults.getPlayerDefaults(options.player);
+		console.log(player);
+		connection.query("INSERT INTO players SET ?", player, function(err, result) {
+			if(err) { 
+				console.log(err);
+				options.result = database.defaultError(101, "Error in database!");
+				return callback(options.result)
+			}
+			options.result.playersInserted = result.affectedRows;
+			options.result.player = player;
+			options.result.player.playerId = result.insertId;
+			callback(options.result);
+		});
 	}
+
 };
 
 module.exports = database;

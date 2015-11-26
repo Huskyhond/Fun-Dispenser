@@ -29,4 +29,6 @@ node_modules
 
 .DS_Store
 
-server/config.js
+config.js
+config/*
+server/config/config.js
