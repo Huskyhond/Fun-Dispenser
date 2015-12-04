@@ -79,6 +79,18 @@ var api = {
 		return next();
 	},
 
+	getLevelDetails: function(req, res, next) {
+		
+		var callback = function(dbResult) {
+			res.send(dbResult);
+		};
+
+		if(req.params.levelId)
+			database.getLevelDetailsById(req.params.levelId, callback);
+		else
+			database.getAllLevelDetails(callback);
+	},
+
 	getRandomQuestion: function(req, res, next) {
 		var callback = function(dbResult) {
 			res.send(dbResult);

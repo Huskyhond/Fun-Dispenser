@@ -57,6 +57,24 @@ var database = {
 
 		dbase.genericSqlQuery(_options, callback);
 	},
+	getAllLevelDetails: function(options, callback) {
+		if(!options) options = {};
+
+		if(typeof options === "function" && !callback) { 
+			callback = options;
+			options = {};
+		}
+
+
+		var _options = {
+			select: "SELECT levelId as id, levelName, achievedAt",
+			from: "FROM levels as level",
+			where: options.where,
+			nestTables: true
+		};
+
+		dbase.genericSqlQuery(_options, callback);
+	},
 
 	/**
 	* Get player details: includes flavour & level
@@ -81,6 +99,13 @@ var database = {
 	*/
 	getFlavourDetailsById: function(flavourId, callback) {
 		database.getAllFlavourDetails({ where: { "flavourId": flavourId}}, callback);
+	},
+
+	/**
+	* Get level details, only Id applicable yet.
+	*/
+	getLevelDetailsById: function(levelId, callback) {
+		database.getAllLevelDetails({ where: { "levelId": levelId}}, callback);
 	},
 
 	/** 

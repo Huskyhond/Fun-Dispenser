@@ -25,12 +25,16 @@ server.get('/players/flavour/:flavourId', api.getPlayerDetails);
 
 /** flavours */
 server.get('/flavours', api.getFlavourDetails);
-server.get('/flavours/:flavourId]', api.getFlavourDetails);
+server.get('/flavours/:flavourId', api.getFlavourDetails);
 
 /** questions */
 server.get('/question', api.getRandomQuestion); // get random question of any subject
 server.get('/question/subject/:subjectId', api.getRandomQuestion); //get random question of given subject
 server.get('/question/:questionId', api.getQuestion); // get question based on id
+
+/** levels */
+server.get('/levels', api.getLevelDetails);
+server.get('/levels/:levelId', api.getLevelDetails);
 
 server.listen(config.port, function() {
 	console.log("Server started!");
