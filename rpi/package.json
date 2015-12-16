@@ -1,0 +1,8 @@
+{
+  "name": "fundispenser",
+  "version": "0.0.1",
+  "main": "index.html",
+  "dependencies": {
+    "request-json": "^0.5.3"
+  }
+}

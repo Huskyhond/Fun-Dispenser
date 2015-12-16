@@ -44,7 +44,17 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        nfc.addNdefListener (
+        nfc.enabled(function(msg) { // Success
+          app.addListener();
+        }, // Failure
+        function(msg) {
+          alert("Please enable NFC!");
+          nfc.showSettings();
+        });
+    },
+
+    addListener: function() {
+       nfc.addNdefListener (
             function (nfcEvent) {
                 var tag = nfcEvent.tag,
                     ndefMessage = tag.ndefMessage;
@@ -52,26 +62,35 @@ var app = {
                 // dump the raw json of the message
                 // note: real code will need to decode
                 // the payload from each record
-                alert(JSON.stringify(ndefMessage));
 
                 if(!JSON.stringify(ndefMessage))
                     return app.unknownUser();
 
                 // assuming the first record in the message has
                 // a payload that can be converted to a string.
+                alert(tag.id);
+                var id   = nfc.bytesToHexString(tag.id);
                 var json = app.parseJSON(nfc.bytesToString(ndefMessage[0].payload).substring(3));
                 
-                if(json) {
+                if(id) {
                     if(json.id) {
                         //DoApiCall To check if id exists
-                        var returnedData = {}; // Data recieved from server
+                      $.ajax({ 
+                        type: "GET", 
+                        url: settings.apiUrl + "/players/tag/" + json.id,
+                        dataType: "json",
+                        cache: false
+                      }).done(function(returnedData) {
                         if(!returnedData || returnedData.error)
-                            app.unknownUser();
+                          app.unknownUser();
                         else {
-                            window.localStorage.setItem("tagId", json.id);
-                            window.localStorage.setItem("loggedIn", true);
-                            location.href = "home.html";
+                          window.localStorage.setItem("tagId", json.id);
+                          window.localStorage.setItem("loggedIn", true);
+                          location.href = "home.html";
                         }
+                      }).fail(function(data) {
+                        alert("Error, try again later");
+                      });
                     }
                 }
                 else 

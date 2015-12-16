@@ -1,8 +1,6 @@
  $(document).ready(function() {
-      alert("new");
       $("#register").submit(function(event) {
           if($("#username").val().length > 0 && $("#email").val().length > 0)
-              alert("Sending data to " + settings.apiUrl);
               $.ajax({ type: "POST", 
                        url: settings.apiUrl + "/players",
                        dataType: "json",
