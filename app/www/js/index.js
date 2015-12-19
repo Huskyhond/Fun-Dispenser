@@ -58,13 +58,15 @@ var app = {
             function (nfcEvent) {
                 var tag = nfcEvent.tag,
                     ndefMessage = tag.ndefMessage;
+					for(i=0;i<tag.id.length;i++)
+						if(tag.id[i]<0)
+							tag.id[i]+=256;
 
                 // dump the raw json of the message
                 // note: real code will need to decode
                 // the payload from each record
 
-                if(!JSON.stringify(ndefMessage))
-                    return app.unknownUser();
+
 
                 // assuming the first record in the message has
                 // a payload that can be converted to a string.
