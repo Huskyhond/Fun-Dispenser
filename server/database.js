@@ -166,6 +166,8 @@ var database = {
 		if(!options.player || !options.player.playerName) return callback(options.result);
 
 		/** Optional **/
+		console.log(options.player);
+		console.log("-----");
 		var player = projectDefaults.getPlayerDefaults(options.player);
 		console.log(player);
 		connection.query("INSERT INTO players SET ?", player, function(err, result) {
