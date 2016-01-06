@@ -4,10 +4,11 @@ var mysql = require("mysql");
 
 var dbase = {
 
-	connection: mysql.createConnection(config.database),
+	connection: ,
 	options: null,
 	
 	getConnection: function() {
+		dbase.connection = mysql.createConnection(config.database);
 		return dbase.connection;
 	},
 
