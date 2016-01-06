@@ -26,6 +26,7 @@ var api = {
 		if(postData && postData.register) {
 			database.setPlayer({
 				player: {
+					tagId      : postData.id,
 					playerName : postData.username,
 					email			 : postData.email
 				}
