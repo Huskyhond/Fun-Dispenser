@@ -4,7 +4,7 @@ var mysql = require("mysql");
 
 var dbase = {
 
-	connection: ,
+	connection: null,
 	options: null,
 	
 	getConnection: function() {
@@ -20,6 +20,7 @@ var dbase = {
 		}
 	*/
 	genericSqlQuery: function(options, callback) {
+		if(!dbase.connection) dbase.getConnection();
 		options = dbase.setDefaultOptions(options, callback); // Set default functions/variables if not set.
 		var queryOptions = {};
 		queryOptions.sql = options.select + " " + options.from;
@@ -41,6 +42,7 @@ var dbase = {
 	},
 
 	setDefaultOptions: function(options, callback) {
+		if(!dbase.connection) dbase.getConnection();
 		if(!options.result) options.result = {};
 		if(!options.result.items) options.result.items = [];
 		if(!options.errorFunction) { 
