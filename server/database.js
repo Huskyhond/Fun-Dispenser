@@ -7,6 +7,7 @@ var database = {
 	*/
 
 	defaultError: function(code, message) {
+		console.log(code, message);
 		if(!code) code = 999;
 		if(!message) message = "Unknown error";
 		return { 
@@ -208,11 +209,11 @@ var database = {
 			if(err) { 
 				console.log(err);
 				options.result = database.defaultError(100, "Error in database!");
-				return callback(options.result)
+				return callback(options.result);
 			}
 			else {
 				options.result.success = true;
-				return callback(options.result)
+				return callback(options.result);
 			}
 		});
 

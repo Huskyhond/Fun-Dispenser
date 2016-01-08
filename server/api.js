@@ -42,19 +42,18 @@ var api = {
 		var postData = tools.parseUrl(req.body);
 
 		var callback = function(dbResult) {
-
 			res.send(dbResult);
 		}
 
 		if(postData && postData.flavourId) {
-			database.setPlayer({ 
+			database.setPlayerFlavour({ 
 				player: {
 					playerId: postData.playerId
 				},
 				flavour: {
 					flavourId: postData.flavourId
 				} 
-			});
+			}, callback);
 		}
 	},
 
