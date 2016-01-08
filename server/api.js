@@ -32,8 +32,14 @@ var api = {
 				}
 			}, callback);
 		}
-		else 
-			res.send({ error: { code: 999, message: "Not implemented yet." } }); // set existing player
+		else {
+			database.changePlayer({
+				player: {
+					playerId: postData.playerId,
+					experience: postData.experience
+				}
+			});
+		}
 
 		return next();
 	},

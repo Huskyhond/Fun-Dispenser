@@ -190,6 +190,28 @@ var database = {
 		});
 	},
 
+	changePlayer: function(options, callback) {
+		if(!options.result) options.result = {};
+
+		if(!options.player || !options.player.id) {
+			options.result = database.defaultError(101, "Variable 'username' not set, in object 'player'");
+			return callback(options.result);
+		}
+
+		connection.query("UPDATE players SET ? WHERE playerId= " + options.player.playerId, options.player, function(err, result) {
+			if(err) { 
+				console.log(err);
+				options.result = database.defaultError(100, "Error in database!");
+				return callback(options.result)
+			}
+			else {
+				options.result.success = true;
+				callback(options.result);
+			}
+		});
+
+	},
+
 	setPlayerFlavour: function(options, callback) {
 		
 		var connection = dbase.getConnection();
