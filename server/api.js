@@ -38,7 +38,7 @@ var api = {
 					playerId: postData.playerId,
 					experience: postData.experience
 				}
-			});
+			}, callback);
 		}
 
 		return next();
