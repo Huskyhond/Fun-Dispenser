@@ -16,6 +16,7 @@ server.use(restify.bodyParser());
 
 /** players */
 server.post('/players', api.setPlayer);
+server.post('/players/flavour', api.setPlayerFlavour);
 
 server.get('/players', api.getPlayerDetails);
 server.get('/players/:playerId', api.getPlayerDetails);

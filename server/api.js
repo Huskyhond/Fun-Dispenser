@@ -38,6 +38,26 @@ var api = {
 		return next();
 	},
 
+	setPlayerFlavour: function(req, res, next) {
+		var postData = tools.parseUrl(req.body);
+
+		var callback = function(dbResult) {
+
+			res.send(dbResult);
+		}
+
+		if(postData && postData.flavourId) {
+			database.setPlayer({ 
+				player: {
+					playerId: postData.playerId
+				},
+				flavour: {
+					flavourId: postData.flavourId
+				} 
+			});
+		}
+	},
+
 	getPlayerDetails: function(req, res, next) {
 		var callback = function(dbResult) {
 			if(dbResult.items.length < 1) {

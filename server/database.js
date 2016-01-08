@@ -1,8 +1,6 @@
 var dbase 	= require('./dbase.js'),
 		projectDefaults = require("./projectDefaults.js");
 
-var connection = dbase.getConnection();
-
 var database = {
 	/**
 		@errorScope: 100-199
@@ -120,6 +118,9 @@ var database = {
 	},
 
 	getQuestions: function(options, callback) {
+
+		var connection = dbase.getConnection();
+
 		var where = "";
 		if(!options.result) options.result = {};
 		if(!options.result.items) options.result.items = [];
@@ -159,11 +160,16 @@ var database = {
 	},
 
 	setPlayer: function(options, callback) {
+		
+		var connection = dbase.getConnection();
+
 		if(!options.result) options.result = {};
 		
 		/** Required **/
-		if(!options.player || !options.player.playerName) options.result = database.defaultError(100, "Variable 'username' not set, in object 'player'");
-		if(!options.player || !options.player.playerName) return callback(options.result);
+		if(!options.player || !options.player.playerName) {
+			options.result = database.defaultError(101, "Variable 'username' not set, in object 'player'");
+			return callback(options.result);
+		}
 
 		/** Optional **/
 		console.log(options.player);
@@ -173,7 +179,7 @@ var database = {
 		connection.query("INSERT INTO players SET ?", player, function(err, result) {
 			if(err) { 
 				console.log(err);
-				options.result = database.defaultError(101, "Error in database!");
+				options.result = database.defaultError(100, "Error in database!");
 				return callback(options.result)
 			}
 			options.result.playersInserted = result.affectedRows;
@@ -181,6 +187,35 @@ var database = {
 			options.result.player.playerId = result.insertId;
 			callback(options.result);
 		});
+	},
+
+	setPlayerFlavour: function(options, callback) {
+		
+		var connection = dbase.getConnection();
+
+		if(!options.result) options.result = {};
+
+		if(!options.player || !options.player.playerId) {
+			options.result = database.defaultError(102, "Variable 'playerId' not set, in object 'player'");
+			return callback(options.result);
+		}
+		if(!options.flavour || !options.flavour.flavourId) {
+			options.result = database.defaultError(103, "Variable 'flavourId' not set in object 'flavour'.");
+			return callback(options.result);
+		}
+
+		connection.query("UPDATE players SET ? WHERE playerId = " + options.player.playerId, options.flavour, function(err, result) {
+			if(err) { 
+				console.log(err);
+				options.result = database.defaultError(100, "Error in database!");
+				return callback(options.result)
+			}
+			else {
+				options.result.success = true;
+				return callback(options.result)
+			}
+		});
+
 	}
 
 };
