@@ -4,12 +4,10 @@ var mysql = require("mysql");
 
 var dbase = {
 
-	connection: null,
 	options: null,
 	
 	getConnection: function() {
-		dbase.connection = mysql.createConnection(config.database);
-		return dbase.connection;
+		return mysql.createConnection(config.database);
 	},
 
 	/**
@@ -20,7 +18,7 @@ var dbase = {
 		}
 	*/
 	genericSqlQuery: function(options, callback) {
-		if(!dbase.connection) dbase.getConnection();
+		var connection = dbase.getConnection();
 		options = dbase.setDefaultOptions(options, callback); // Set default functions/variables if not set.
 		var queryOptions = {};
 		queryOptions.sql = options.select + " " + options.from;
@@ -34,15 +32,16 @@ var dbase = {
 		
 		queryOptions.nestTables = !!options.nestTables;
 
-		dbase.connection.query(queryOptions, options.where)
+		connection.query(queryOptions, options.where)
 		.on('error', options.errorFunction)
 		.on('fields', options.fieldsFunction)
 		.on('result', options.resultFunction)
 		.on('end', options.endFunction);
+		connection.end();
 	},
 
 	setDefaultOptions: function(options, callback) {
-		if(!dbase.connection) dbase.getConnection();
+		var connection = dbase.getConnection();
 		if(!options.result) options.result = {};
 		if(!options.result.items) options.result.items = [];
 		if(!options.errorFunction) { 
