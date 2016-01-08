@@ -130,7 +130,7 @@ var database = {
 		var cbed = false;
 
 		connection.query({
-			sql: "SELECT questionId as id, question, answerId, subject.subjectId as id, subject.subjectName" +
+			sql: "SELECT questionId as id, question.answerId, question, subject.subjectId as id, subject.subjectName" +
 					 " FROM questions as question INNER JOIN subjects as subject ON question.subjectId = subject.subjectId" +
 					 where + " ORDER BY RAND() " + (options.limit ? "LIMIT " + options.limit : ""),
 			nestTables: true
@@ -166,6 +166,8 @@ var database = {
 		if(!options.player || !options.player.playerName) return callback(options.result);
 
 		/** Optional **/
+		console.log(options.player);
+		console.log("-----");
 		var player = projectDefaults.getPlayerDefaults(options.player);
 		console.log(player);
 		connection.query("INSERT INTO players SET ?", player, function(err, result) {
