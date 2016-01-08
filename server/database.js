@@ -152,11 +152,13 @@ var database = {
 					callback(options.result);
 					cbed = true;
 				}
+				connection.end();
 			});
 		})
 		.on('end', function() {
 			if(!cbed && todo < 1)
 				callback(options.result);
+				connection.end();
 		})
 	},
 
@@ -188,9 +190,13 @@ var database = {
 			options.result.player.playerId = result.insertId;
 			callback(options.result);
 		});
+		connection.end();
 	},
 
 	changePlayer: function(options, callback) {
+		
+		var connection = dbase.getConnection();
+
 		if(!options.result) options.result = {};
 
 		if(!options.player || !options.player.id) {
@@ -209,6 +215,8 @@ var database = {
 				callback(options.result);
 			}
 		});
+
+		connection.end();
 
 	},
 
@@ -238,6 +246,8 @@ var database = {
 				return callback(options.result);
 			}
 		});
+
+		connection.end();
 
 	}
 
