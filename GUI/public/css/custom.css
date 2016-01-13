@@ -1,0 +1,58 @@
+#answerIdA{
+	display: none;
+}
+
+#answerIdB{
+	display: none;
+}
+
+#answerIdC{
+	display: none;
+}
+
+#questionId{
+	display: none;
+}
+
+@-webkit-keyframes pulse{
+ 0% {
+ -webkit-transform: scale(1, 1);
+}
+ 50% {
+ -webkit-transform: scale(1.1, 1.1);
+}
+ 100% {
+ -webkit-transform: scale(1, 1);
+};
+}
+
+@keyframes pulse {
+ 0% {
+ transform: scale(1, 1);
+}
+ 50% {
+ transform: scale(1.1, 1.1);
+}
+ 100% {
+transform: scale(1, 1);
+};
+}
+
+#welcomeText {
+	width: 250px;
+	margin-left: 50px;
+	margin-top: 10px;
+	text-align: center;
+	background-color: white;
+	-webkit-animation: pulse 1s linear infinite;
+	animation: pulse 1s linear infinite;
+}
+
+#welcome{
+	margin: 0 auto;
+	margin-bottom: 20px;
+	margin-top: 10px;
+	border-radius: 10px;
+	width: 350px;
+	border:solid black 1px;
+}

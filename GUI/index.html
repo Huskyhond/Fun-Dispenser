@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Fundispenser</title>
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Custom styles for this template -->
+    <link href="css/jumbotron-narrow.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
+  </head>
+
+  <body>
+<div style="margin-top: 100px" class="container">
+  <div id="connected">
+      <div class="header clearfix">
+        <nav>
+        </nav>
+        <!--<img src="img/fun.png" style="height:150px;margin-bottom:5px">-->
+        <h1 id="player" class="text-muted">Hallo!</h1>
+      </div>
+
+      <div class="jumbotron">
+        <h2 id="subject">Question Subject</h2>
+        <p id="question" class="lead">Question text</p>
+      </div>
+
+      <div id="row-marketing" class="row marketing">
+        <span id="questionId"></span>
+          <a href="#"><div id="answerA" class="col-xs-4">
+            <h4 id ="sendA">A</h4>
+            <span id="answerIdA"></span>
+            <p>Awnser A text</p>
+          </div></a>
+          <a href="#"><div id="answerB" class="col-xs-4">
+            <h4 id ="sendB">B</h4>
+            <span id="answerIdB"></span>
+            <p>Awnser B text</p>
+          </div></a>
+          <a href="#"><div id="answerC" class="col-xs-4">
+            <h4 id ="sendC">C</h4>
+            <span id="answerIdC"></span>
+            <p>Awnser C text</p>
+          </div></a>
+        </div>
+      </div>
+      <div id="disconnected">
+        <img src="img/fun.png" width="700" height="400">
+        <div id="welcome">
+          <h1 id="welcomeText">Plaats uw mok</h1>
+        </div>
+      </div>
+    </div><!-- end container -->
+
+    <footer class="footer">
+    </footer>
+
+    <script>
+    var socket = io.connect();
+
+    socket.on('player', function(data){
+      $('#connected').css('display', 'block');
+      $('#disconnected').css('display', 'none');
+      $('#row-marketing').css('display','block');
+      $('#player').text("Hallo, "+data.playerName);
+
+    });
+
+    socket.on('question', function(data){
+      $('#subject').text("Onderwerp: "+data.subject.subjectName);
+      $('#question').text("Vraag: "+data.question.question);
+      $('#questionId').text(data.question.id);
+      $('#row-marketing').css('display','block');
+      $('#answerA p').text(data.answers[0].answer);
+      $('#answerIdA').text(data.answers[0].answerId);
+      $('#answerB p').text(data.answers[1].answer);
+      $('#answerIdB').text(data.answers[1].answerId);
+      $('#answerC p').text(data.answers[2].answer);
+      $('#answerIdC').text(data.answers[2].answerId);
+
+      //data.subject.subjectName //Subjectname
+     // data.awnsers //array van awnsers
+    });
+
+    socket.on('disconnectUser', function(){
+      $('#connected').css('display', 'none');
+      $('#disconnected').css('display', 'block');
+      $('#disconnected h1').text('Plaats uw mok!');
+
+      $('#subject').text('');
+      $('#question').text('');
+      $('#questionId').text('');
+      $('#answerA p').text('');
+      $('#answerIdA').text('');
+      $('#answerB p').text('');
+      $('#answerIdB').text('');
+      $('#answerC p').text('');
+      $('#answerIdC').text('');
+    });
+
+    socket.on('unknownPlayer', function(){
+      $('#disconnected h1').text('Onbekende mok. Registreer eerst uw mok');
+    });
+
+    socket.on('answerCorrect', function(){
+      $('#subject').text('');
+      $('#question').text('Vraag goed beantwoord. Uw drankje komt er aan.');
+      $('#row-marketing').css('display','none');
+      socket.emit('giveDrink');
+      setTimeout(function(){
+        $('#question').text('Je drankje is klaar. Neem je mok uit.');
+      },10000);
+      
+      
+    });
+
+    socket.on('answerIncorrect', function(){
+      $('#subject').text('');
+      $('#question').text('Vraag fout beantwoord. Er komt een nieuwe vraag aan.');
+      $('#row-marketing').css('display','none');
+      setTimeout(function(){
+        socket.emit('getQuestion');
+      },3000);
+      
+     // socket.emit('getQuestion');      
+    });
+
+
+    socket.on('buttonA', function(){
+      socket.emit('answerCheck', $('#answerIdA').text());
+    });
+
+    socket.on('buttonB', function(){
+      socket.emit('answerCheck', $('#answerIdB').text());
+    });
+
+    socket.on('buttonC', function(){
+      socket.emit('answerCheck', $('#answerIdC').text());
+    });
+
+
+    //Onclick functions
+    $(document).ready(function(){
+
+
+
+
+    $('#connected').css('display', 'none');
+    $('#disconnected').css('display', 'block');
+    
+    $('#answerA').click(function(e){
+        socket.emit('answerCheck', $('#answerIdA').text());
+    });
+    
+    $('#answerB').click(function(e){
+        socket.emit('answerCheck', $('#answerIdB').text());
+    });
+
+    $('#answerC').click(function(e){
+        socket.emit('answerCheck', $('#answerIdC').text());
+    });
+  });
+  </script>
+  </body>
+</html>
