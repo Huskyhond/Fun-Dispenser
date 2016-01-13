@@ -29,6 +29,8 @@ server.get('/flavours', api.getFlavourDetails);
 server.get('/flavours/:flavourId', api.getFlavourDetails);
 
 /** questions */
+server.post('/question/answer', api.postAnswer); // Optional for answer logging
+
 server.get('/question', api.getRandomQuestion); // get random question of any subject
 server.get('/question/subject/:subjectId', api.getRandomQuestion); //get random question of given subject
 server.get('/question/:questionId', api.getQuestion); // get question based on id

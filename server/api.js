@@ -140,6 +140,19 @@ var api = {
 			res.send(dbResult);
 		});
 		return next();
+	},
+
+	postAnswer: function(req, res, next) {
+		var postData = tools.parseUrl(req.body);
+
+		var callback = function(dbResult) {
+			res.send(dbResult);
+		}
+
+		if(!postData.questionId || !postData.answerId)
+			res.send({ code: 202, message: "Not all parameters are set, requires questionId, answerId" });
+		else
+			database.setAnswer({ answerId: postData.answerId, questionId: postData.questionId }, callback);
 	}
 	
 
