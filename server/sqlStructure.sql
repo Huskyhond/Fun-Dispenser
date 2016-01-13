@@ -45,9 +45,7 @@ INSERT INTO `players` (`playerId`, `playerName`, `tagId`, `experience`, `levelId
 -- Indexen voor tabel `players`
 --
 ALTER TABLE `players`
-  ADD PRIMARY KEY (`playerId`),
-  ADD KEY `fk_players_flavours_idx` (`flavourId`),
-  ADD KEY `fk_players_levels1_idx` (`levelId`);
+  ADD PRIMARY KEY (`playerId`);
 
 --
 -- AUTO_INCREMENT voor geëxporteerde tabellen

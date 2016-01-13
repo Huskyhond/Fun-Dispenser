@@ -58,45 +58,38 @@ var app = {
             function (nfcEvent) {
                 var tag = nfcEvent.tag,
                     ndefMessage = tag.ndefMessage;
-					for(i=0;i<tag.id.length;i++)
-						if(tag.id[i]<0)
-							tag.id[i]+=256;
 
                 // dump the raw json of the message
                 // note: real code will need to decode
                 // the payload from each record
 
-
-
                 // assuming the first record in the message has
                 // a payload that can be converted to a string.
-                alert(tag.id);
+
                 var id   = nfc.bytesToHexString(tag.id);
-                var json = app.parseJSON(nfc.bytesToString(ndefMessage[0].payload).substring(3));
-                
+
                 if(id) {
-                    if(json.id) {
-                        //DoApiCall To check if id exists
-                      $.ajax({ 
-                        type: "GET", 
-                        url: settings.apiUrl + "/players/tag/" + json.id,
-                        dataType: "json",
-                        cache: false
-                      }).done(function(returnedData) {
-                        if(!returnedData || returnedData.error)
-                          app.unknownUser();
-                        else {
-                          window.localStorage.setItem("tagId", json.id);
-                          window.localStorage.setItem("loggedIn", true);
-                          location.href = "home.html";
-                        }
-                      }).fail(function(data) {
-                        alert("Error, try again later");
-                      });
+                  //DoApiCall To check if id exists
+                  $.ajax({ 
+                    type: "GET", 
+                    url: settings.apiUrl + "/players/tag/" + id,
+                    dataType: "json",
+                    cache: false
+                  }).done(function(returnedData) {
+
+                    if(!returnedData || returnedData.error)
+                      app.unknownUser(id);
+                    else {
+                      window.localStorage.setItem("tagId", id);
+                      window.localStorage.setItem("loggedIn", true);
+                      location.href = "home.html";
                     }
+                  }).fail(function(data) {
+                    alert("Error, try again later");
+                  });
                 }
                 else 
-                    app.unknownUser();
+                    alert("This TAG is not compatible!");
             },
             function () { // success callback
                 app.receivedEvent('scanready');
@@ -108,8 +101,8 @@ var app = {
     },
 
     //Called to update DOM for a new USER.
-    unknownUser: function() {
-        location.href = "notfound.html";
+    unknownUser: function(id) {
+        location.href = "notfound.html?id="+ id;
     },
 
     // Update DOM on a Received Event

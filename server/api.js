@@ -26,15 +26,41 @@ var api = {
 		if(postData && postData.register) {
 			database.setPlayer({
 				player: {
+					tagId      : postData.id,
 					playerName : postData.username,
 					email			 : postData.email
 				}
 			}, callback);
 		}
-		else 
-			res.send({ error: { code: 999, message: "Not implemented yet." } }); // set existing player
+		else {
+			database.changePlayer({
+				player: {
+					playerId: postData.playerId,
+					experience: postData.experience
+				}
+			}, callback);
+		}
 
 		return next();
+	},
+
+	setPlayerFlavour: function(req, res, next) {
+		var postData = tools.parseUrl(req.body);
+
+		var callback = function(dbResult) {
+			res.send(dbResult);
+		}
+
+		if(postData && postData.flavourId) {
+			database.setPlayerFlavour({ 
+				player: {
+					playerId: postData.playerId
+				},
+				flavour: {
+					flavourId: postData.flavourId
+				} 
+			}, callback);
+		}
 	},
 
 	getPlayerDetails: function(req, res, next) {
@@ -114,6 +140,19 @@ var api = {
 			res.send(dbResult);
 		});
 		return next();
+	},
+
+	postAnswer: function(req, res, next) {
+		var postData = tools.parseUrl(req.body);
+
+		var callback = function(dbResult) {
+			res.send(dbResult);
+		}
+
+		if(!postData.questionId || !postData.answerId)
+			res.send({ code: 202, message: "Not all parameters are set, requires questionId, answerId" });
+		else
+			database.setAnswer({ answerId: postData.answerId, questionId: postData.questionId }, callback);
 	}
 	
 

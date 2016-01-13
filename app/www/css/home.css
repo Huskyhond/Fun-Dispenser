@@ -3,6 +3,18 @@
     position: absolute;
 }
 
+.appcenter {
+  text-align: center;
+}
+
+#settings {
+  margin-top: 50px;
+}
+
+.settings h5 {
+  margin-bottom: 5px;
+}
+
 .player {
   font-weight: bold;  
   margin-top: 20px;
