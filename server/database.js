@@ -257,18 +257,31 @@ var database = {
 
 		if(!options.result) options.result = {};
 
-		if(!options.question || !options.question.questionId) {
+		if(!options.question || !options.question.questionId)
 			options.result = database.defaultError(102, "Variable 'questionId' not set, in object 'question'");
-			return callback(options.result);
-		}
-		if(!options.answer || !options.answer.answerId)  {
+		if(!options.answer || !options.answer.answerId)
 			options.result = database.defaultError(102, "Variable 'answerId' not set, in object 'answer'");
-			return callback(options.result);
-		}
-		if(!options.player || !options.player.playerId) {
+		if(!options.player || !options.player.playerId)
 			options.result = database.defaultError(102, "Variable 'playerId' not set, in object 'player'");
+
+		if(options.result.code)
 			return callback(options.result);
+
+		var input = {
+			questionId: options.question.questionId,
+			answerId: options.answer.answerId,
+			player: options.player.playerId
 		}
+
+		connection.query("INSERT INTO answers_log SET ?", input, function(err, result) {
+			if(err) console.log(err);
+
+			options.result.insertedToLog = result.affectedRows;
+			options.result.answersLog = input;
+			options.result.answersLog.answersLogId = result.insertId;
+
+			return callback(options.result);
+		});
 
 	}
 
