@@ -270,7 +270,7 @@ var database = {
 		var input = {
 			questionId: options.question.questionId,
 			answerId: options.answer.answerId,
-			player: options.player.playerId
+			playerId: options.player.playerId
 		}
 
 		connection.query("INSERT INTO answers_log SET ?", input, function(err, result) {
