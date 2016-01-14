@@ -23,12 +23,14 @@ app.get('/', function(req, res){
 
 server.listen(port); // Setup your server port.
 
+
+var globalUser;
+
 io.sockets.on('connection', function(socket){
   //send data to client
   var called = 0;
-  var answerId;
-
-
+  var answer;
+  var user;
 
   setInterval(function(){
   	if(read){
@@ -45,13 +47,15 @@ io.sockets.on('connection', function(socket){
 		  			socket.emit('unknownPlayer');
 		  		}
 		  		else if(typeof body.items[0] != 'undefined' ){
-		  			var player = body.items[0].player;
+            				globalUser = body.items[0];
+					user = globalUser.player;
+		  			var player = globalUser.player;
+            
 		  			socket.emit('player', player);
 
 		  			client.get('/question',function(err, res, body){
 		  				var question = body.items[0];
-
-		  				answerId = question.question.answerId;
+		  				answer = question;
 		  				socket.emit('question', question);
 		  			});
 		  		}
@@ -68,20 +72,41 @@ io.sockets.on('connection', function(socket){
 
   socket.on('giveDrink', function(){
   	console.log('DRINKEN DISPENSEN');
+    var pin = 36;
+    
+    switch(globalUser.flavour.id) {
+      case 1:
+        pin = 36;
+        break;
+      case 2:
+        pin = 38;
+        break;
+      case 3:
+        pin = 40;
+        break;
+    }
+    
+    var time = 4000;
+    
+    PythonShell.run('relais.py', {
+      args: [pin, time]
+    }, function(err, results) {
+      if(err) throw err;
+      console.log('results: %j', results);
+    });
   });
 
   socket.on('disconnectUser', function(){
   	socket.emit('disconnectUser');
   });
 
-  socket.on('getQuestion', function(data){
+  socket.on('getQuestion', function(){
   	client.get('/question',function(err, res, body){
-      console.log(data);
+      console.log(body);
 
-
-      if(typeof data != 'undefined'){
+      if(typeof body != 'undefined'){
         var question = body.items[0];
-        answerId = question.question.answerId;
+        answer = question;
         socket.emit('question', question);
       }
       else{
@@ -90,16 +115,32 @@ io.sockets.on('connection', function(socket){
 	  });
   });
 
-  socket.on('answerCheck', function(data){
-    if(data == answerId){
-    	console.log('ANTWOORD IS GOED');
+  socket.on('answerCheck', function(answerId){
+    var postData = {
+      answerId: answerId,
+      questionId: answer.question.id,
+      playerId: user.id,
+    };
+
+    if(answerId == answer.question.answerId){
+      //var answerId = data;
+
+      
+
+    	console.log('ANTWOORD IS GOED');     
     	socket.emit('answerCorrect');
+      console.log(postData);
+      
+     
     }
-    else if(data != answerId){
+    else if(answerId != answer.question.answerId){
     	console.log('ANTWOORD IS FOUT');
     	socket.emit('answerIncorrect'); 
     }
-  });
+
+    client.post('/question/answer', null, function(error  , response, parsed) {
+    }).form(postData); 
+  });   
 
 });
 
@@ -108,7 +149,7 @@ io.sockets.on('connection', function(socket){
 
 console.log("App successfully launched!");
 
-
+      
 ButtonPyshell.on('message',function(message){
 
     if(message.indexOf('1')>-1){
@@ -116,7 +157,7 @@ ButtonPyshell.on('message',function(message){
       io.sockets.emit('buttonA');
     }
     else if(message.indexOf('2')>-1){
-      console.log('BUTTON B');
+          console.log('BUTTON B');  
       io.sockets.emit('buttonB');
     }
     else if(message.indexOf('3')>-1){
@@ -159,6 +200,6 @@ Read2Pyshell.on('message', function(message){
         });  
         called = 1;
     }*/
-    console.log(read);
+    //console.log(read);
 });
 
