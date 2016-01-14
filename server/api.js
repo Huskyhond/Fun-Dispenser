@@ -153,6 +153,18 @@ var api = {
 			res.send({ code: 202, message: "Not all parameters are set, requires questionId, answerId, playerId" });
 		else
 			database.setAnswer({ answer: { answerId: postData.answerId }, question: { questionId: postData.questionId }, player: { playerId: postData.playerId } }, callback);
+	},
+
+	getPlayerLog: function(req, res, next) {
+
+		var callback = function(dbResult) {
+			res.send(dbResult);
+		}
+
+		if(!req.params.playerId)
+			return res.send({ code: 202, message: "Not all parameters are set, requires playerId" });
+		else
+			database.getPlayerLog({ player: { playerId: req.params.playerId }});
 	}
 	
 
