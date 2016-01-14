@@ -28,7 +28,7 @@ var api = {
 				player: {
 					tagId      : postData.id,
 					playerName : postData.username,
-					email			 : postData.email
+					email	   : postData.email
 				}
 			}, callback);
 		}
@@ -149,10 +149,10 @@ var api = {
 			res.send(dbResult);
 		}
 
-		if(!postData.questionId || !postData.answerId)
-			res.send({ code: 202, message: "Not all parameters are set, requires questionId, answerId" });
+		if(!postData.questionId || !postData.answerId || !postData.playerId)
+			res.send({ code: 202, message: "Not all parameters are set, requires questionId, answerId, playerId" });
 		else
-			database.setAnswer({ answerId: postData.answerId, questionId: postData.questionId }, callback);
+			database.setAnswer({ answer: { answerId: postData.answerId }, question: { questionId: postData.questionId }, player: { playerId: postData.playerId } }, callback);
 	}
 	
 

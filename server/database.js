@@ -249,6 +249,27 @@ var database = {
 
 		connection.end();
 
+	},
+
+	setAnswer: function(options, callback) {
+
+		var connection = dbase.getConnection();
+
+		if(!options.result) options.result = {};
+
+		if(!options.question || !options.question.questionId)
+			options.result = database.defaultError(102, "Variable 'questionId' not set, in object 'question'");
+			return callback(options.result);
+		}
+		if(!options.answer || !options.answer.answerId)
+			options.result = database.defaultError(102, "Variable 'answerId' not set, in object 'answer'");
+			return callback(options.result);
+		}
+		if(!options.player || !options.player.playerId)
+			options.result = database.defaultError(102, "Variable 'playerId' not set, in object 'player'");
+			return callback(options.result);
+		}
+
 	}
 
 };
