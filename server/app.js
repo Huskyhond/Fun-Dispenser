@@ -40,10 +40,7 @@ function customFormat(req, res, body) {
 
 var server = restify.createServer({
 	name: 'Project Fun Server',
-	version: '0.0.1',
-	formatters: {
-		'application/json' : customFormat
-	}
+	version: '0.0.1'
 });
 
 server.use(restify.acceptParser(server.acceptable));
