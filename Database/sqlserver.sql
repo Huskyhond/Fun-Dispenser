@@ -8,19 +8,19 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema fundispenser_server
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema mydb
+-- Schema fundispenser_server
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
-USE `mydb` ;
+CREATE SCHEMA IF NOT EXISTS `fundispenser_server` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+USE `fundispenser_server` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`subjects`
+-- Table `fundispenser_server`.`subjects`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`subjects` (
+CREATE TABLE IF NOT EXISTS `fundispenser_server`.`subjects` (
   `subjectId` INT NOT NULL AUTO_INCREMENT,
   `subjectName` VARCHAR(45) NULL,
   PRIMARY KEY (`subjectId`))
@@ -28,9 +28,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`flavours`
+-- Table `fundispenser_server`.`flavours`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`flavours` (
+CREATE TABLE IF NOT EXISTS `fundispenser_server`.`flavours` (
   `flavourId` INT NOT NULL AUTO_INCREMENT,
   `flavourName` VARCHAR(45) NULL,
   PRIMARY KEY (`flavourId`))
@@ -38,9 +38,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`levels`
+-- Table `fundispenser_server`.`levels`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`levels` (
+CREATE TABLE IF NOT EXISTS `fundispenser_server`.`levels` (
   `levelId` INT NOT NULL AUTO_INCREMENT,
   `achievedAt` INT NULL,
   `levelName` VARCHAR(45) NULL,
@@ -49,9 +49,9 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`players`
+-- Table `fundispenser_server`.`players`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`players` (
+CREATE TABLE IF NOT EXISTS `fundispenser_server`.`players` (
   `playerId` INT NOT NULL AUTO_INCREMENT,
   `playerName` VARCHAR(45) NULL,
   `tagID` VARCHAR(45) NULL,
@@ -63,21 +63,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`players` (
   INDEX `fk_players_levels1_idx` (`levelId` ASC),
   CONSTRAINT `fk_players_flavours`
     FOREIGN KEY (`flavourId`)
-    REFERENCES `mydb`.`flavours` (`flavourId`)
+    REFERENCES `fundispenser_server`.`flavours` (`flavourId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_players_levels1`
     FOREIGN KEY (`levelId`)
-    REFERENCES `mydb`.`levels` (`levelId`)
+    REFERENCES `fundispenser_server`.`levels` (`levelId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`difficulty`
+-- Table `fundispenser_server`.`difficulty`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`difficulty` (
+CREATE TABLE IF NOT EXISTS `fundispenser_server`.`difficulty` (
   `playerSkill` INT(2) NULL,
   `subjectId` INT NOT NULL,
   `levelId` INT NOT NULL,
@@ -85,21 +85,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`difficulty` (
   INDEX `fk_difficulty_levels1_idx` (`levelId` ASC),
   CONSTRAINT `fk_difficulty_subjects1`
     FOREIGN KEY (`subjectId`)
-    REFERENCES `mydb`.`subjects` (`subjectId`)
+    REFERENCES `fundispenser_server`.`subjects` (`subjectId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_difficulty_levels1`
     FOREIGN KEY (`levelId`)
-    REFERENCES `mydb`.`levels` (`levelId`)
+    REFERENCES `fundispenser_server`.`levels` (`levelId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`questions`
+-- Table `fundispenser_server`.`questions`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`questions` (
+CREATE TABLE IF NOT EXISTS `fundispenser_server`.`questions` (
   `questionId` INT NOT NULL AUTO_INCREMENT,
   `question` VARCHAR(128) NULL,
   `subjectId` INT NOT NULL,
@@ -107,16 +107,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`questions` (
   INDEX `fk_questions_subjects1_idx` (`subjectId` ASC),
   CONSTRAINT `fk_questions_subjects1`
     FOREIGN KEY (`subjectId`)
-    REFERENCES `mydb`.`subjects` (`subjectId`)
+    REFERENCES `fundispenser_server`.`subjects` (`subjectId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `mydb`.`answers`
+-- Table `fundispenser_server`.`answers`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`answers` (
+CREATE TABLE IF NOT EXISTS `fundispenser_server`.`answers` (
   `answerId` INT NOT NULL AUTO_INCREMENT,
   `answer` VARCHAR(45) NULL,
   `questionId` INT NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`answers` (
   INDEX `fk_answers_questions1_idx` (`questionId` ASC),
   CONSTRAINT `fk_answers_questions1`
     FOREIGN KEY (`questionId`)
-    REFERENCES `mydb`.`questions` (`questionId`)
+    REFERENCES `fundispenser_server`.`questions` (`questionId`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
