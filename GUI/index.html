@@ -62,16 +62,19 @@
 
     <script>
     var socket = io.connect();
+    var currentQuestion;
+    var currentPlayer;
 
     socket.on('player', function(data){
+      currentPlayer = data;
       $('#connected').css('display', 'block');
       $('#disconnected').css('display', 'none');
       $('#row-marketing').css('display','block');
       $('#player').text("Hallo, "+data.playerName);
-
     });
 
     socket.on('question', function(data){
+      currentQuestion = data;
       $('#subject').text("Onderwerp: "+data.subject.subjectName);
       $('#question').text("Vraag: "+data.question.question);
       $('#questionId').text(data.question.id);
@@ -101,6 +104,8 @@
       $('#answerIdB').text('');
       $('#answerC p').text('');
       $('#answerIdC').text('');
+      currentQuestion = undefined;
+      currentPlayer = undefined;
     });
 
     socket.on('unknownPlayer', function(){
@@ -112,58 +117,40 @@
       $('#question').text('Vraag goed beantwoord. Uw drankje komt er aan.');
       $('#row-marketing').css('display','none');
       socket.emit('giveDrink');
+      currentQuestion = undefined;
       setTimeout(function(){
         $('#question').text('Je drankje is klaar. Neem je mok uit.');
-      },10000);
-      
-      
+      },500);//TODO TIME DRINK AND SET TIMEOUT ACCORDINGLY
     });
 
     socket.on('answerIncorrect', function(){
       $('#subject').text('');
       $('#question').text('Vraag fout beantwoord. Er komt een nieuwe vraag aan.');
       $('#row-marketing').css('display','none');
+      currentQuestion = undefined;
       setTimeout(function(){
         socket.emit('getQuestion');
-      },3000);
-      
-     // socket.emit('getQuestion');      
+      },3000);     
     });
 
 
     socket.on('buttonA', function(){
-      socket.emit('answerCheck', $('#answerIdA').text());
+      //socket.emit('answerCheck', $('#answerIdA').text());
+      socket.emit('answerCheck',currentQuestion.answers[0].answerId)
     });
 
     socket.on('buttonB', function(){
-      socket.emit('answerCheck', $('#answerIdB').text());
+      socket.emit('answerCheck', currentQuestion.answers[1].answerId);
     });
 
     socket.on('buttonC', function(){
-      socket.emit('answerCheck', $('#answerIdC').text());
+      socket.emit('answerCheck', currentQuestion.answers[2].answerId);
     });
 
 
-    //Onclick functions
-    $(document).ready(function(){
-
-
-
-
+  $(document).ready(function(){
     $('#connected').css('display', 'none');
-    $('#disconnected').css('display', 'block');
-    
-    $('#answerA').click(function(e){
-        socket.emit('answerCheck', $('#answerIdA').text());
-    });
-    
-    $('#answerB').click(function(e){
-        socket.emit('answerCheck', $('#answerIdB').text());
-    });
-
-    $('#answerC').click(function(e){
-        socket.emit('answerCheck', $('#answerIdC').text());
-    });
+    $('#disconnected').css('display', 'block');  
   });
   </script>
   </body>
