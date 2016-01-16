@@ -148,7 +148,7 @@ var api = {
 		var callback = function(dbResult) {
 			res.send(dbResult);
 		}
-
+		console.log(postData);
 		if(!postData.questionId || !postData.answerId || !postData.playerId)
 			res.send({ code: 202, message: "Not all parameters are set, requires questionId, answerId, playerId" });
 		else
