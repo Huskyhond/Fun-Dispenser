@@ -164,7 +164,7 @@ var api = {
 		if(!req.params.playerId)
 			return res.send({ code: 202, message: "Not all parameters are set, requires playerId" });
 		else
-			database.getPlayerLog({ player: { playerId: req.params.playerId }});
+			database.getPlayerLog({ player: { playerId: req.params.playerId }}, callback);
 	}
 	
 
