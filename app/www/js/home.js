@@ -1,4 +1,5 @@
 $.afui.useOSThemes = false;
+$.afui.setBackButtonVisibility(false); 
 
 var playerId = 0;
 
@@ -42,6 +43,34 @@ $(document).ready(function() {
         if(playerFlavour == item.flavour.id)
           option.attr("selected", "selected");
         $(".tastes").append(option);
+      }
+    });
+
+    $.ajax({ 
+      type: "GET", 
+      url:  settings.apiUrl + "/question/log/" + playerId,
+      dataType: "json",
+      cache: false
+    }).done(function(logData) {
+      var logs = logData.items;
+      for(i = 0; i < logs.length; i++) {
+        var log   = logs[i];
+        alert(JSON.stringify(log));
+        (function(_log) {
+          $.ajax({ 
+            type: "GET", 
+            url:  settings.apiUrl + "/question/" + _log.answersLog.questionId,
+            dataType: "json",
+            cache: false
+          }).done(function(question) {
+            $q = $("<div>").html(question.question.question);
+            if(_log.answersLog.answerId == question.items[0].question.id)
+              $q.css("background-color", "green");
+            else
+              $q.css("background-color", "red");
+            $q.appendTo(".questionlog");
+          });
+        })(log);
       }
     });
 
