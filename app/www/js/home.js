@@ -55,11 +55,12 @@ $(document).ready(function() {
       var logs = logData.items;
       for(i = 0; i < logs.length; i++) {
         var log   = logs[i];
-        alert(JSON.stringify(log));
+        alert(logs.lenth);
         (function(_log) {
+          alert(JSON.stringify(_log.answerLog));
           $.ajax({ 
             type: "GET", 
-            url:  settings.apiUrl + "/question/" + _log.answersLog.questionId,
+            url:  settings.apiUrl + "/question/" + _log.answerLog.questionId,
             dataType: "json",
             cache: false
           }).done(function(question) {
@@ -68,6 +69,8 @@ $(document).ready(function() {
               $q.css("background-color", "green");
             else
               $q.css("background-color", "red");
+            alert("appending");
+            alert(JSON.stringify(question));
             $q.appendTo(".questionlog");
           });
         })(log);
