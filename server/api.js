@@ -12,7 +12,7 @@ var api = {
 
 	setPlayer: function(req, res, next) {
 		var postData = tools.parseUrl(req.body);
-
+		console.log(postData);
 		var callback = function(dbResult) {
 			if(dbResult.playersAffected < 1) {
 				dbResult.error = {
