@@ -74,10 +74,6 @@ server.get('/question/log/:playerId', api.getPlayerLog);
 server.get('/levels', api.getLevelDetails);
 server.get('/levels/:levelId', api.getLevelDetails);
 
-
-
-server.post('/player/level', api.setPlayerLevel);
-
 server.listen(config.port, function() {
 	console.log("Server started on port", config.port, "!");
 });

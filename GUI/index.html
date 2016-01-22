@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Fundispenser</title>
+	<script src="js/jquery-1.11.3.min.js"></script>
+	<script src="socket.io/socket.io.js"></script>
+  <script src="js/jquery.fittext.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Custom styles for this template -->
+    <link href="css/jumbotron-narrow.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
+  </head>
+
+  <body>
+  <div class="header clearfix">
+    <h1 id="player" class="text-muted">Hallo!</h1>
+    <p id="level">Level:</p>
+    <p id="exp">Exp:</p>
+    <p id="flavour">Smaak:</p>
+  </div>
+<div class="container">
+  <div id="connected">
+
+
+      <div class="jumbotron">
+        <h2 id="subject"></h2>
+        <p id="question" class="lead"></p>
+      </div>
+
+
+      <div id="row-marketing" class="row marketing">
+        <span id="questionId"></span>
+          <a href="#"><div id="answerA" class="col-xs-4">
+            <h4 id ="sendA">A</h4>
+            <span id="answerIdA"></span>
+            <p></p>
+          </div></a>
+          <a href="#"><div id="answerB" class="col-xs-4">
+            <h4 id ="sendB">B</h4>
+            <span id="answerIdB"></span>
+            <p></p>
+          </div></a>
+          <a href="#"><div id="answerC" class="col-xs-4">
+            <h4 id ="sendC">C</h4>
+            <span id="answerIdC"></span>
+            <p></p>
+          </div></a>
+        </div>
+
+
+      </div>
+      <div id="disconnected">
+        <img src="img/fun.png" width="700" height="400">
+        <div id="welcome">
+          <h1 id="welcomeText">Plaats uw mok</h1>
+        </div>
+      </div>
+    </div><!-- end container -->
+    <script>
+
+    var buttonsEnabled = false;
+
+    function enableButtons() {
+	buttonsEnabled = true;
+    }
+
+    function disableButtons() {
+	buttonsEnabled = false;
+    }
+
+    var socket = io.connect();
+    var currentQuestion;
+    var currentPlayer;
+
+    socket.on('player', function(data){
+      currentPlayer = data;
+      $('#connected').css('display', 'block');
+      $('.header').css('display', 'block');
+      $('#disconnected').css('display', 'none');
+      $('#row-marketing').css('display','block');
+      $('#player').text("Hallo, "+data.items[0].player.playerName);
+      $('#level').text("Level: "+data.items[0].level.levelName);
+      $('#flavour').text('Smaak: '+data.items[0].flavour.flavourName);
+      $('#exp').text('Exp: '+data.items[0].player.experience);
+      //$('#level').text("Level: "+data.);
+
+
+      console.log(data);
+    });
+
+    socket.on('question', function(data){
+      currentQuestion = data;
+      $('#subject').text("Onderwerp: "+data.subject.subjectName);
+      $('#question').text("Vraag: "+data.question.question);
+      $('#questionId').text(data.question.id);
+      $('#row-marketing').css('display','block');
+      $('#answerA p').text(data.answers[0].answer);
+      $('#answerIdA').text(data.answers[0].answerId);
+      $('#answerB p').text(data.answers[1].answer);
+      $('#answerIdB').text(data.answers[1].answerId);
+      $('#answerC p').text(data.answers[2].answer);
+      $('#answerIdC').text(data.answers[2].answerId);
+
+      enableButtons();
+      //data.subject.subjectName //Subjectname
+     // data.awnsers //array van awnsers
+    });
+
+    socket.on('disconnectUser', function(){
+      $('#connected').css('display', 'none');
+      $('#disconnected').css('display', 'block');
+      $('#disconnected h1').text('Plaats uw mok!');
+      $('.header').css('display', 'none');
+      $('#subject').text('');
+      $('#question').text('');
+      $('#questionId').text('');
+      $('#answerA p').text('');
+      $('#answerIdA').text('');
+      $('#answerB p').text('');
+      $('#answerIdB').text('');
+      $('#answerC p').text('');
+      $('#answerIdC').text('');
+      currentQuestion = undefined;
+      currentPlayer = undefined;
+    });
+
+    socket.on('unknownPlayer', function(){
+      $('#disconnected h1').text('Onbekende mok. Registreer eerst uw mok');
+    });
+
+    socket.on('answerCorrect', function(){
+      $('#subject').text('');
+      $('#question').text('Vraag goed beantwoord. Uw drankje komt er aan.');
+      $('#row-marketing').css('display','none');
+      socket.emit('giveDrink');
+      currentQuestion = undefined;
+      setTimeout(function(){
+        $('#question').text('Je drankje is klaar. Neem je mok uit.');
+      },5000);//TODO TIME DRINK AND SET TIMEOUT ACCORDINGLY
+    });
+
+    socket.on('answerIncorrect', function(){
+      $('#subject').text('');
+      $('#question').text('Vraag fout beantwoord. Er komt een nieuwe vraag aan.');
+      $('#row-marketing').css('display','none');
+      currentQuestion = undefined;
+      setTimeout(function(){
+        socket.emit('getQuestion');
+      },3000);     
+    });
+
+
+    socket.on('buttonA', function(){
+      //socket.emit('answerCheck', $('#answerIdA').text());
+      if(buttonsEnabled) {
+        disableButtons();  
+        socket.emit('answerCheck',currentQuestion.answers[0].answerId);
+      }
+    });
+
+    socket.on('buttonB', function(){
+      if(buttonsEnabled) {
+        disableButtons();
+        socket.emit('answerCheck', currentQuestion.answers[1].answerId);
+      }
+    });
+
+    socket.on('buttonC', function(){
+      if(buttonsEnabled) {
+        disableButtons();  
+        socket.emit('answerCheck', currentQuestion.answers[2].answerId);
+      }
+    });
+
+
+  $(document).ready(function(){
+    $('#connected').css('display', 'none');
+    $('.header').css('display', 'none');
+    $('#disconnected').css('display', 'block');  
+  });
+  </script>
+  <script>
+    $('#question').fitText(1.5, {minFontSize: '20px', maxFontSize: '36px'});
+    $('#row-marketing').fitText(1.5, {minFontSize: '20px', maxFontSize: '36px'});
+  </script>
+  </body>
+</html>
