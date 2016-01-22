@@ -165,25 +165,6 @@ var api = {
 			return res.send({ code: 202, message: "Not all parameters are set, requires playerId" });
 		else
 			database.getPlayerLog({ player: { playerId: req.params.playerId }}, callback);
-	},
-
-	setPlayerLevel: function(req, res, next) {
-		var postData = tools.parseUrl(req.body);
-
-		var callback = function(dbResult) {
-			res.send(dbResult);
-		}
-
-		if(postData && postData.levelId) {
-			database.setPlayerLevel({ 
-				player: {
-					playerId: postData.playerId
-				},
-				level: {
-					levelId: postData.levelId
-				} 
-			}, callback);
-		}
 	}
 	
 

@@ -274,37 +274,6 @@ var database = {
 			return callback(options.result);
 		});
 
-	},
-
-	setPlayerLevel: function(options, callback) {
-		
-		var connection = dbase.getConnection();
-
-		if(!options.result) options.result = {};
-
-		if(!options.player || !options.player.playerId) {
-			options.result = database.defaultError(102, "Variable 'playerId' not set, in object 'player'");
-			return callback(options.result);
-		}
-		if(!options.level || !options.level.levelId) {
-			options.result = database.defaultError(103, "Variable 'levelId' not set in object 'level'.");
-			return callback(options.result);
-		}
-
-		connection.query("UPDATE players SET ? WHERE playerId = " + options.player.playerId, options.level, function(err, result) {
-			if(err) { 
-				console.log(err);
-				options.result = database.defaultError(100, "Error in database!");
-				return callback(options.result);
-			}
-			else {
-				options.result.success = true;
-				return callback(options.result);
-			}
-		});
-
-		connection.end();
-
 	}
 
 };
