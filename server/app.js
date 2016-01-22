@@ -1,7 +1,7 @@
 "use strict";
 
-var restify = require('restify'),
-		api			= require('./api.js'),
+var restify 	= require('restify'),
+		api		= require('./api.js'),
 		config  = require('./config/config.js');
 
 /* Ripped from: http://stackoverflow.com/questions/10995601/node-restify-how-to-indent-json-output */
@@ -75,5 +75,5 @@ server.get('/levels', api.getLevelDetails);
 server.get('/levels/:levelId', api.getLevelDetails);
 
 server.listen(config.port, function() {
-	console.log("Server started!");
+	console.log("Server started on port", config.port, "!");
 });
