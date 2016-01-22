@@ -65,6 +65,28 @@
   margin-left: -13px;
 }
 
+.questionlog {
+  text-align: center;
+  
+}
+
+.questionlog div {
+  margin: 0 auto;
+  width: 90%;
+  border-radius: 900px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 15px;
+}
+
+.questionlog .correct {
+  background-color: green;
+}
+
+.questionlog .incorrect {
+  background-color: red;
+}
+
 #progressbar > div {
   background-color: orange;
   width: 40%; /* Adjust with JavaScript */

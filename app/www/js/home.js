@@ -3,7 +3,32 @@ $.afui.setBackButtonVisibility(false);
 
 var playerId = 0;
 
+function handleLogs(logs, callback) {
+  if(logs.length > 0) {
+    var log   = logs.shift();
+    $.ajax({ 
+      type: "GET", 
+      url:  settings.apiUrl + "/question/" + log.answerLog.questionId,
+      dataType: "json",
+      cache: false
+    }).done(function(question) {
+      $q = $("<div>").html(question.items[0].question.question);
+      if(log.answerLog.answerId == question.items[0].question.answerId)
+        $q.addClass("correct");
+      else
+        $q.addClass("incorrect");
+      handleLogs(logs, callback);
+      $q.appendTo(".questionlog");
+    }).fail(function(data) {
+      alert(data);
+    });
+  }
+  else
+    if(callback) callback();
+}
+
 $(document).ready(function() {
+
   $("#content").css("display", "none");
   $.ajax({ type: "GET", 
            url: settings.apiUrl + "/players/tag/" + localStorage.getItem("tagId"),
@@ -53,28 +78,7 @@ $(document).ready(function() {
       cache: false
     }).done(function(logData) {
       var logs = logData.items;
-      for(i = 0; i < logs.length; i++) {
-        var log   = logs[i];
-        alert(logs.lenth);
-        (function(_log) {
-          alert(JSON.stringify(_log.answerLog));
-          $.ajax({ 
-            type: "GET", 
-            url:  settings.apiUrl + "/question/" + _log.answerLog.questionId,
-            dataType: "json",
-            cache: false
-          }).done(function(question) {
-            $q = $("<div>").html(question.question.question);
-            if(_log.answersLog.answerId == question.items[0].question.id)
-              $q.css("background-color", "green");
-            else
-              $q.css("background-color", "red");
-            alert("appending");
-            alert(JSON.stringify(question));
-            $q.appendTo(".questionlog");
-          });
-        })(log);
-      }
+      handleLogs(logs);
     });
 
   }).fail(function(data) {
