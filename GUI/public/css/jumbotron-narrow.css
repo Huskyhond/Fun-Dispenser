@@ -2,6 +2,7 @@
 body {
   padding-top: 20px;
   padding-bottom: 20px;
+  overflow: hidden;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -33,8 +34,9 @@ body {
 
 /* Customize container */
 @media (min-width: 768px) {
+
   .container {
-    max-width: 730px;
+    max-width: 800px;
   }
 }
 .container-narrow > hr {
@@ -53,7 +55,7 @@ body {
 
 /* Supporting marketing content */
 .marketing {
-  margin: 40px 0;
+  margin: 100px 0;
 }
 .marketing p + h4 {
   margin-top: 28px;

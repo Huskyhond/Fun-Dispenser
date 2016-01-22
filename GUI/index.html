@@ -9,6 +9,7 @@
     <title>Fundispenser</title>
 	<script src="js/jquery-1.11.3.min.js"></script>
 	<script src="socket.io/socket.io.js"></script>
+  <script src="js/jquery.fittext.js"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <!-- Custom styles for this template -->
     <link href="css/jumbotron-narrow.css" rel="stylesheet">
@@ -16,38 +17,42 @@
   </head>
 
   <body>
-<div style="margin-top: 100px" class="container">
+  <div class="header clearfix">
+    <h1 id="player" class="text-muted">Hallo!</h1>
+    <p id="level">Level:</p>
+    <p id="exp">Exp:</p>
+    <p id="flavour">Smaak:</p>
+  </div>
+<div class="container">
   <div id="connected">
-      <div class="header clearfix">
-        <nav>
-        </nav>
-        <!--<img src="img/fun.png" style="height:150px;margin-bottom:5px">-->
-        <h1 id="player" class="text-muted">Hallo!</h1>
-      </div>
+
 
       <div class="jumbotron">
-        <h2 id="subject">Question Subject</h2>
-        <p id="question" class="lead">Question text</p>
+        <h2 id="subject"></h2>
+        <p id="question" class="lead"></p>
       </div>
+
 
       <div id="row-marketing" class="row marketing">
         <span id="questionId"></span>
           <a href="#"><div id="answerA" class="col-xs-4">
             <h4 id ="sendA">A</h4>
             <span id="answerIdA"></span>
-            <p>Awnser A text</p>
+            <p></p>
           </div></a>
           <a href="#"><div id="answerB" class="col-xs-4">
             <h4 id ="sendB">B</h4>
             <span id="answerIdB"></span>
-            <p>Awnser B text</p>
+            <p></p>
           </div></a>
           <a href="#"><div id="answerC" class="col-xs-4">
             <h4 id ="sendC">C</h4>
             <span id="answerIdC"></span>
-            <p>Awnser C text</p>
+            <p></p>
           </div></a>
         </div>
+
+
       </div>
       <div id="disconnected">
         <img src="img/fun.png" width="700" height="400">
@@ -56,11 +61,18 @@
         </div>
       </div>
     </div><!-- end container -->
-
-    <footer class="footer">
-    </footer>
-
     <script>
+
+    var buttonsEnabled = false;
+
+    function enableButtons() {
+	buttonsEnabled = true;
+    }
+
+    function disableButtons() {
+	buttonsEnabled = false;
+    }
+
     var socket = io.connect();
     var currentQuestion;
     var currentPlayer;
@@ -68,9 +80,17 @@
     socket.on('player', function(data){
       currentPlayer = data;
       $('#connected').css('display', 'block');
+      $('.header').css('display', 'block');
       $('#disconnected').css('display', 'none');
       $('#row-marketing').css('display','block');
-      $('#player').text("Hallo, "+data.playerName);
+      $('#player').text("Hallo, "+data.items[0].player.playerName);
+      $('#level').text("Level: "+data.items[0].level.levelName);
+      $('#flavour').text('Smaak: '+data.items[0].flavour.flavourName);
+      $('#exp').text('Exp: '+data.items[0].player.experience);
+      //$('#level').text("Level: "+data.);
+
+
+      console.log(data);
     });
 
     socket.on('question', function(data){
@@ -86,6 +106,7 @@
       $('#answerC p').text(data.answers[2].answer);
       $('#answerIdC').text(data.answers[2].answerId);
 
+      enableButtons();
       //data.subject.subjectName //Subjectname
      // data.awnsers //array van awnsers
     });
@@ -94,7 +115,7 @@
       $('#connected').css('display', 'none');
       $('#disconnected').css('display', 'block');
       $('#disconnected h1').text('Plaats uw mok!');
-
+      $('.header').css('display', 'none');
       $('#subject').text('');
       $('#question').text('');
       $('#questionId').text('');
@@ -120,7 +141,7 @@
       currentQuestion = undefined;
       setTimeout(function(){
         $('#question').text('Je drankje is klaar. Neem je mok uit.');
-      },500);//TODO TIME DRINK AND SET TIMEOUT ACCORDINGLY
+      },5000);//TODO TIME DRINK AND SET TIMEOUT ACCORDINGLY
     });
 
     socket.on('answerIncorrect', function(){
@@ -136,22 +157,36 @@
 
     socket.on('buttonA', function(){
       //socket.emit('answerCheck', $('#answerIdA').text());
-      socket.emit('answerCheck',currentQuestion.answers[0].answerId)
+      if(buttonsEnabled) {
+        disableButtons();  
+        socket.emit('answerCheck',currentQuestion.answers[0].answerId);
+      }
     });
 
     socket.on('buttonB', function(){
-      socket.emit('answerCheck', currentQuestion.answers[1].answerId);
+      if(buttonsEnabled) {
+        disableButtons();
+        socket.emit('answerCheck', currentQuestion.answers[1].answerId);
+      }
     });
 
     socket.on('buttonC', function(){
-      socket.emit('answerCheck', currentQuestion.answers[2].answerId);
+      if(buttonsEnabled) {
+        disableButtons();  
+        socket.emit('answerCheck', currentQuestion.answers[2].answerId);
+      }
     });
 
 
   $(document).ready(function(){
     $('#connected').css('display', 'none');
+    $('.header').css('display', 'none');
     $('#disconnected').css('display', 'block');  
   });
+  </script>
+  <script>
+    $('#question').fitText(1.5, {minFontSize: '20px', maxFontSize: '36px'});
+    $('#row-marketing').fitText(1.5, {minFontSize: '20px', maxFontSize: '36px'});
   </script>
   </body>
 </html>

@@ -47,11 +47,13 @@ io.sockets.on('connection', function(socket){
 		  			socket.emit('unknownPlayer');
 		  		}
 		  		else if(typeof body.items[0] != 'undefined' ){
-            				globalUser = body.items[0];
+          var testUser = body;
+
+          globalUser = body.items[0];
 					user = globalUser.player;
 		  			var player = globalUser.player;
             
-		  			socket.emit('player', player);
+		  			socket.emit('player', testUser);
 
 		  			client.get('/question',function(err, res, body){
 		  				var question = body.items[0];
@@ -85,8 +87,9 @@ io.sockets.on('connection', function(socket){
         pin = 40;
         break;
     }
-    
-    var time = 4000;
+
+    //Relais    
+    var time = 5500;
     
     PythonShell.run('relais.py', {
       args: [pin, time]
@@ -103,7 +106,6 @@ io.sockets.on('connection', function(socket){
   socket.on('getQuestion', function(){
   	client.get('/question',function(err, res, body){
       console.log(body);
-
       if(typeof body != 'undefined'){
         var question = body.items[0];
         answer = question;
@@ -122,13 +124,19 @@ io.sockets.on('connection', function(socket){
       playerId: user.id,
     };
 
+    var expData ={
+      playerId: globalUser.player.playerId,
+      experience: globalUser.player.experience + 10,
+    };
+
     if(answerId == answer.question.answerId){
       //var answerId = data;
 
-      
-
     	console.log('ANTWOORD IS GOED');     
     	socket.emit('answerCorrect');
+
+      client.post('/players', null, function(error, response, parsed){
+      }).form(expData);
       console.log(postData);
       
      
@@ -152,23 +160,27 @@ console.log("App successfully launched!");
       
 ButtonPyshell.on('message',function(message){
 
-    if(message.indexOf('1')>-1){
-      console.log('BUTTON A');
-      io.sockets.emit('buttonA');
-    }
-    else if(message.indexOf('2')>-1){
-          console.log('BUTTON B');  
-      io.sockets.emit('buttonB');
-    }
-    else if(message.indexOf('3')>-1){
-      console.log('BUTTON C');
-      io.sockets.emit('buttonC');
-    }
-    else if(message.indexOf('4')>-1){
-      console.log('BUTTON CANCEL');
-      io.sockets.emit('disconnectUser');
-    }
-	//console.log(data.toString());
+	    if(message.indexOf('1')>-1){
+	      console.log('BUTTON A');
+	      io.sockets.emit('buttonA');
+	  
+	    }
+	    else if(message.indexOf('2')>-1){
+		  console.log('BUTTON B');  
+	      io.sockets.emit('buttonB');
+	   
+	    }
+	    else if(message.indexOf('3')>-1){
+	      console.log('BUTTON C');
+	      io.sockets.emit('buttonC');
+	   
+	    }
+	    else if(message.indexOf('4')>-1){
+	      console.log('BUTTON CANCEL');
+	      io.sockets.emit('disconnectUser');
+ 	    }
+		//console.log(data.toString());
+	
 });
 
 //Read from Read2.py

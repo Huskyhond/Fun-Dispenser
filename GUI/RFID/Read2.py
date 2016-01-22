@@ -75,7 +75,7 @@ while continue_reading:
 			check = 1
 		else:
 			if timerIsOn == False and done == False:
-				timer = threading.Timer(2.0,timeOut)
+				timer = threading.Timer(0.5,timeOut)
 				timer.start()
 				timerIsOn = True
 			
