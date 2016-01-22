@@ -169,10 +169,6 @@ var database = {
 		if(!options.result) options.result = {};
 		
 		/** Required **/
-		if(!options.player || !options.player.playerName) {
-			options.result = database.defaultError(101, "Variable 'username' not set, in object 'player'");
-			return callback(options.result);
-		}
 
 		/** Optional **/
 		console.log(options.player);
@@ -283,22 +279,6 @@ var database = {
 			return callback(options.result);
 		});
 
-	},
-
-	getPlayerLog: function(options, callback) {
-		if(!options.result) options.result = {};
-
-		if(!options.player || !options.player.playerId)
-			options.result = database.defaultError(102, "Variable 'playerId' not set, in object 'player'");
-
-		var _options = {
-			select: "SELECT questionId, answerId, playerId",
-			from: "FROM answers_log as answerLog",
-			where: { playerId: options.player.playerId },
-			nestTables: true
-		};
-
-		dbase.genericSqlQuery(_options, callback);
 	}
 
 };
