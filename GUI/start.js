@@ -51,8 +51,8 @@ io.sockets.on('connection', function(socket){
 
           globalUser = body.items[0];
 					user = globalUser.player;
-		  			var player = globalUser.player;
-            
+		  		var player = globalUser.player;
+
 		  			socket.emit('player', testUser);
 
 		  			client.get('/question',function(err, res, body){
@@ -125,8 +125,8 @@ io.sockets.on('connection', function(socket){
     };
 
     var expData ={
-      playerId: globalUser.player.playerId,
-      experience: globalUser.player.experience + 10,
+      playerId: user.id,
+      experience: user.experience + 10,
     };
 
     if(answerId == answer.question.answerId){
@@ -136,8 +136,8 @@ io.sockets.on('connection', function(socket){
     	socket.emit('answerCorrect');
 
       client.post('/players', null, function(error, response, parsed){
-      }).form(expData);
-      console.log(postData);
+      }).form(expData); 
+      console.log(expData);
       
      
     }
@@ -151,7 +151,7 @@ io.sockets.on('connection', function(socket){
   });   
 
 });
-
+  
 
 
 
