@@ -85,10 +85,9 @@ $(document).ready(function() {
     alert("Fout tijdens ophalen persoonsgegevens!" + JSON.stringify(data)); 
   });
 
-  
 
-  $(window).on("swiperight", function(event) {
-    $("#leftpanel").panel("open");
+  $(".icon").click(function() {
+    $.afui.clearHistory();
   });
 
   $(".tastes").change(function() {
@@ -109,6 +108,10 @@ $(document).ready(function() {
       alert(JSON.stringify(rtn));
     });
   });
+
+  $(".flavourName").click(function() {
+    $('.tastes').attr('size',6);
+  });
   
 });
 
@@ -127,15 +130,18 @@ function setExperience(playerData, levelData) {
   var user = playerData.items[0];
   for(var i = 0; i < levelData.items.length; i++) {
     if(levelData.items[i].level.id == user.level.id) {
-      if(i < levelData.items.length) {
+      if(i+1 < levelData.items.length) {
 
         var nextLevel = levelData.items[i+1].level;
-        // Iets met level vergelijken
-        //$("#content .experience").html(user.player.experience + "/ " + nextLevel.achievedAt);
-        var percent = (user.player.experience/nextLevel.achievedAt) * 100;
+
+        var percent = ((user.player.experience - user.level.achievedAt)/(nextLevel.achievedAt - user.level.achievedAt)) * 100;
         $("#progressbar div").css({ width: percent + "%" });
         $("#progressbar span").html(percent + "%");
         break;
+      }
+      else {
+        $("#progressbar div").css({ width: "100%" });
+        $("#progressbar span").html("100%");
       }
     }
   }
