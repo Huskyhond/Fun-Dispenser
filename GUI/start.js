@@ -25,17 +25,31 @@ server.listen(port); // Setup your server port.
 
 
 var globalUser;
+var openPin = -1;
 
 io.sockets.on('connection', function(socket){
   //send data to client
   var called = 0;
   var answer;
   var user;
+  var testUser;
 
   setInterval(function(){
   	if(read){
   		if(read.tagId == 'None'){
   			if(called == 1){
+         // console.log('OPEN PIN IS', openPin);
+          if(openPin > -1){
+            (function(pin) {  
+              PythonShell.run('relais.py', {
+               args: [pin, 0, 1]
+              }, function(err, results) {
+                  if(err) throw err;
+                console.log('esults: %j', results);
+                 openPin = -1;
+              });
+            })(openPin);
+          }
   				socket.emit('disconnectUser');
   			}
   			called = 0;
@@ -45,13 +59,16 @@ io.sockets.on('connection', function(socket){
 		  		if(typeof body.error != 'undefined'){
 		  			console.log('Unknown Player');
 		  			socket.emit('unknownPlayer');
+            return;
 		  		}
 		  		else if(typeof body.items[0] != 'undefined' ){
-          var testUser = body;
+          testUser = body;
 
           globalUser = body.items[0];
 					user = globalUser.player;
 		  		var player = globalUser.player;
+
+          }
 
 		  			socket.emit('player', testUser);
 
@@ -60,7 +77,7 @@ io.sockets.on('connection', function(socket){
 		  				answer = question;
 		  				socket.emit('question', question);
 		  			});
-		  		}
+		  		
 		  	});
 		  	called = 1;
   		}
@@ -87,15 +104,17 @@ io.sockets.on('connection', function(socket){
         pin = 40;
         break;
     }
+    openPin = pin;
 
     //Relais    
-    var time = 5500;
+    var time = 6000;
     
     PythonShell.run('relais.py', {
-      args: [pin, time]
+      args: [pin, time, 0]
     }, function(err, results) {
       if(err) throw err;
       console.log('results: %j', results);
+      openPin = -1;
     });
   });
 
@@ -129,6 +148,12 @@ io.sockets.on('connection', function(socket){
       experience: user.experience + 10,
     };
 
+    var levelData={
+      playerId: user.id,
+      levelId: 2,
+    };
+
+
     if(answerId == answer.question.answerId){
       //var answerId = data;
 
@@ -137,7 +162,20 @@ io.sockets.on('connection', function(socket){
 
       client.post('/players', null, function(error, response, parsed){
       }).form(expData); 
-      console.log(expData);
+      //console.log(expData);
+/*
+      switch(parseInt((user.experience + 10)/100)){
+        case 1:
+          client.post('/players', null, function(error, response, parsed){
+          }).form({playerId: user.id, levelId: 2});
+          break;       
+      }*/
+
+      if((user.experience + 10) >= 100){
+        client.post('/player/level', null, function(error, response, parsed){
+          console.log(parsed);
+        }).form(levelData);
+      }
       
      
     }
@@ -177,7 +215,7 @@ ButtonPyshell.on('message',function(message){
 	    }
 	    else if(message.indexOf('4')>-1){
 	      console.log('BUTTON CANCEL');
-	      io.sockets.emit('disconnectUser');
+	     // io.sockets.emit('disconnectUser');
  	    }
 		//console.log(data.toString());
 	

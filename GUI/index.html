@@ -35,17 +35,17 @@
 
       <div id="row-marketing" class="row marketing">
         <span id="questionId"></span>
-          <a href="#"><div id="answerA" class="col-xs-4">
+          <a href="#"><div id="answerA" class="col-xs-4 answer">
             <h4 id ="sendA">A</h4>
             <span id="answerIdA"></span>
             <p></p>
           </div></a>
-          <a href="#"><div id="answerB" class="col-xs-4">
+          <a href="#"><div id="answerB" class="col-xs-4 answer">
             <h4 id ="sendB">B</h4>
             <span id="answerIdB"></span>
             <p></p>
           </div></a>
-          <a href="#"><div id="answerC" class="col-xs-4">
+          <a href="#"><div id="answerC" class="col-xs-4 answer">
             <h4 id ="sendC">C</h4>
             <span id="answerIdC"></span>
             <p></p>
@@ -105,7 +105,9 @@
       $('#answerIdB').text(data.answers[1].answerId);
       $('#answerC p').text(data.answers[2].answer);
       $('#answerIdC').text(data.answers[2].answerId);
-
+      
+      $('#question').fitText(1.5, {minFontSize: '20px', maxFontSize: '36px'});
+      $('#row-marketing').fitText(1.5, {minFontSize: '20px', maxFontSize: '36px'});
       enableButtons();
       //data.subject.subjectName //Subjectname
      // data.awnsers //array van awnsers

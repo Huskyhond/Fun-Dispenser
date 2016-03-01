@@ -57,13 +57,6 @@ while continue_reading:
 		#if card is detected
 		if status == MIFAREReader.MI_OK:
 			try:	
-				if timerIsOn:
-					timer.cancel()
-					timerIsOn = False
-					timer = None
-				if done:
-					done = False
-
 				sector0 = MIFAREReader.MFRC522_Read(0)[0:3] +MIFAREReader.MFRC522_Read(0)[4:8]
 				GUID = str(bytearray(sector0)).encode('hex')
 				output = JSONEncoder().encode({"status":"Card detected", "tagId":GUID})
@@ -74,13 +67,7 @@ while continue_reading:
 			MIFAREReader.MFRC522_StopCrypto1()
 			check = 1
 		else:
-			if timerIsOn == False and done == False:
-				timer = threading.Timer(0.5,timeOut)
-				timer.start()
-				timerIsOn = True
-			
-			if done:
-				print defaultOutput
+			print defaultOutput
 						
 	else:
 		check = 0

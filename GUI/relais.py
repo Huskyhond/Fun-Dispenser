@@ -27,6 +27,12 @@ def enableTap(pin,delay):
 
 inputje = int(sys.argv[1])
 timeoutje = int(sys.argv[2])
+stopje = int(sys.argv[3])
+
+
 firstRun(inputje)
 
-enableTap(inputje, (timeoutje/1000))
+if stopje == 1:
+	GPIO.output(inputje, False)
+else:
+	enableTap(inputje, (timeoutje/1000))
